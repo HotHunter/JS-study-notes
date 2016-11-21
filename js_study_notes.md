@@ -682,4 +682,204 @@ instance ：如果变量是给定引用类型的实例，instance操作符就会
     alert(colors instanceof Array);     //colors是Array吗
     alert(pattern instanceof RegExp);   //pattern是RegExp吗
 
-执行环境及作用域：
+####  执行环境及作用域：
+定义了变量或者函数有权访问的其他数据，决定各自的行为。每个执行韩静都有一个与之关联的变量对象（variable object），环境中定义的所有变量和函数都保存在这个对象中。虽然编写的代码无法访问，但解析器在处理数据是在后台访问。
+全局环境被认为window对象。
+代码在一个环境中执行时，会常见变量对象的一个作用域链（scope chain）。保证对执行环境有权访问的所有变量和函数的有序访问。
+表示服解析颜值作用域链意义搜索标识符。
+
+    var color = "blue";
+    function changeColor(){
+        if (color === "blue"){
+            color = "red";
+        }else {
+            color = "blue";
+        }
+    }
+    changeColor();
+    alert("color is now: " + color);
+
+局部作用域中定义的变量可以再局部环境中与全局变量互换使用
+
+    var color = "blue";
+    function changeColor(){
+        var anotherColor = "red";
+        function swapColors(){
+            var tempColor = anotherColor;
+            anotherColor = color;
+            color = tempColor;
+            //这里可以访问color/anotherColor和tempColor
+        }
+        //这里可以访问color和anotherColor，但不能访问tempColor
+        swapColors();
+    }
+    //这里只能访问color
+    changeColor();
+
+内部环境可以通过作用域链访问外部环境，但外部环境不能访问内部环境中的任何变量和函数。
+
+延长作用域链：
+try-catch/with语句，都会在作用域链的前端添加一个变量对象。
+with：会将制定的对象添加到作用域链中。
+catch：创建一个新的变量对象，包含的是被抛出的错误对象的声明。
+
+    function buildUrl(){
+        var qs = "?debug=true";
+        with(location){
+            var url = href + qs;
+        }
+        return url;
+    }
+
+没有块级元素：
+不用于其他类C语言，javaScript无块级元素。
+    
+    if (true) {
+        var color = "blue";
+    }
+    alert (color);      // "blue"
+
+    for(var i = 0; i<10 ; i++){
+        doSomeThing();
+    }
+    alert(i);           //10
+
+使用var声明的变量会自动被添加到最近的环境中。
+在函数内部，最近的环境就是函数的局部环境；
+上例中的for/if则被添加到执行环境即全局环境。
+
+    function add(num1, num2){
+        var sum = num1 + num2;
+        return sum;
+    }
+    var result = add(10 , 20);      //30
+    alert(sum);                     //由于sum不是有效的变量，因此会导致错误。
+
+    function add(num1, num2){
+        sum = num1 + num2;
+        return sum;
+    }
+    var result = add(10 , 20);      //30
+    alert(sum);                     //30
+
+在函数内部变量没有石油var关键字声明，则自动变成全局变量。
+
+查询标识符的过程：
+
+    var color = "blue";
+    function getColor(){
+        return color;
+    }
+    alert(getColor());      // "blue"
+
+如果存在一个局部的变量的定义，搜索会自动停止，不再进入另一个变量对象，如果局部环境中存在同名标识符，就不会适应位于父环境中的标识符。
+
+    var color = "blue";
+    vunction getColor(){
+        var color = "red";
+        return color;
+    }
+    alert(getColor());      // "red"
+
+#### 垃圾收集
+执行环境会负责管理代码执行过程中使用的内存。
+两个实现方法：
+
+标记清除：
+垃圾收集器会在运行的时候归给存储在内存中的所有变量都加上标记。然后会去掉环境中的变量以及被环境中的额变量引用的额变量的标记。而在之后再被加上标记的变量将被视为准备删除的变量，原因是环境中的变量已经无法访问到这些变凉了。最后完成内存清除工作，销毁那些带标记的值并收回他们占用的内存。
+
+引用计数：
+因为循环的问题，这个方法已被废弃，太长不看了。
+
+性能问题：
+因需要周期运行，如果变量分配的内存数量可观，导致回收工作量变大。
+//TODO:感觉这里涉及到了页面性能优化。
+    
+    window.CollectGarbage();        //IE中立即调用垃圾回收
+    window.opera.collect();         //Opert7以上版本立即调用垃圾回收
+
+管理内存：
+存在问题，因为分配给浏览器的可用内存数量小于分配给桌面应用的（出于安全考虑，防止javascript网页耗尽全部内存导致系统崩溃）。内存闲置问题不仅会影响给变量分配的内存，同事还会影响调用栈以及在一个贤臣各种能够同时执行的语句数量。
+所以：一旦数据不再有用，最好通过将其值设置为null来释放其引用--解除引用(dereferencing)。适用于大多数全局变量和全局对象的属性。
+
+    function createPerson(name){
+        var localPerson = new Object();
+        localPerson.name = name;
+        return localPerson;
+    }
+    var globalPerson = createPerson("hothunter");
+    //手工解除globalPerson的引用
+    globalPerson = null;
+
+localPerson在函数执行环境结束时自动被回收，但globalPerson则需要在不是用他的时候手工解除引用。
+珍重目的不意味着自动回收该所占用的内存。真正作用是让值脱离执行环境，以便垃圾收集器下次运行将其回收。
+
+---
+
+### 引用类型
+
+引用类型的值（对象）是引用类型的一个实例。在EMCAScript中，引用类型是一种数据结构，将数据和功能组织在一起。也被成为<b>类</b>、<b>对象定义</b>。
+对象是某个特定引用类型的实例。
+
+    var person = new Object();
+
+↑ 创建了Object引用类型的一个新实例，然后把该实例保存在了变量person中。使用的构造函数是Object，它只为新兑现该定义了默认的属性和方法。
+
+#### Object 类型
+
+创建Object
+
+    var person = new Object();
+    person.name = "Hothunter";
+    person.age = 23;
+
+    var person = {
+        "name" : "HotHunter",
+        "age" : 23
+    };
+
+//TODO:上下文
+表达式上下文（expression context）：
+语句上下文（statement context）：
+
+    var person = {
+        "name"  :   "HotHunter",
+        "age"   :   23,
+        5       :   true
+    };
+
+    var person = {};        ==>     var person = new Object();
+
+    function displayInfo(args){
+        var output = "";
+        if(typeof args.name = "string"){
+            output += "Name:" + args.name + "\n";
+        }
+        if(typeof args.age == "namber"){
+            output += "Age:" +　args.age + "\n";
+        }
+        alert(output);
+    }
+    displayInfo({
+        name :　"Hothunter",
+        age : 23
+        });
+    displayInfo({
+        name : "gray";
+        });
+
+对那些必须治使用命名参数，而是用对象字面量来封装过多个可选参数。
+
+    alert(person["name"]);      //"Hothunter"
+    alert(person.name);         //"Hothunter"
+
+从功能上看，这两种访问属性的方法没有任何区别。但方括号语法的主要优点是可以通过变量来访问属性。
+
+    var propertyName = "name";
+    alert(person[propertyName]);        //"Hothunter"
+    person["first name"] = "Hothunter"      //first name中间有一个空格，只能用[]访问到。
+
+通常，除非必须使用变量来访问属性，负责我们建议使用点表示法。
+
+
+#### Array 类型
