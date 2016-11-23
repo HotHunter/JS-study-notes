@@ -883,3 +883,350 @@ localPerson在函数执行环境结束时自动被回收，但globalPerson则需
 
 
 #### Array 类型
+数组：数据的有序列表。
+ECMAScript数组的每一项可以保存任何类型的数据。数组的大小是可以动态调整的，随着数组的添加自动增长一容纳新数据。
+
+创建数组：
+
+    var colors = new Array();
+    var colors = new Array(20);
+    var colors = new Array("red", "blue", "green");
+    var colors = Array(3);
+    //
+    var name = [];          //一个空数组
+    var values = [1,2,];    //不要这样！创建一个包含2或3项的数组
+    var options = [,,,,,];  //不要这样！创建一个包含5或6项的数组
+
+    var colors = ["red", "blue", "green"];
+    alert(colors[0]);           //显示第一项
+    colors[2] = "black";        //修改第三项
+    colors[3] = "brown";        //新增第四项
+
+    var colors = ["red", "blue", "green"];
+    colors.length = 2;
+    alert(colors[2]);           //undefined     .length缩小了数组长度
+
+    var colors = ["red", "blue", "green"];
+    colors.length = 4;
+    alert(colors[3]);           //undefined     .length增加了长度
+
+由于数组最后一线搞得key始终是length-1，因此下一个新项的位置就是length
+
+    var colors = ["red", "blue", "green"];
+    colors[colors.length] = "black";
+    colors[colors.length] = "brown";
+
+    var colors = ["red", "blue", "green"];
+    colors[99] = "black";
+    alert(colors.length);       //100
+
+检测数组：
+    
+    if (value instanceof Array){
+        doSomeThing();
+    }
+
+    if (Array.isArray(value)){
+        doSomeThing();
+    }
+
+转换方法：
+
+    var colors = ["red", "blue", "green"];
+    alert(colors.toString());           //red,blue,green
+    alert(colors.valueOf());            //red,blue,green
+    alert(colors);                      //red,blue,green
+
+toString将每个值得字符串表示拼接成字符串，用逗号分隔。
+
+    var person1 = {
+        toLocaleString : function (){
+            return "HotHunter";
+        },
+        toSring : function(){
+            return "Hot";
+        }
+    };
+    var person2 = {
+        toLocaleString : function (){
+            return "meishaonv";
+        },
+        toString : function (){
+            return "msn";
+        }
+    };
+    //
+    var people [person1, person2];
+    alert(people);                      //Hot,msn
+    alert(people.toString());           //Hot,msn
+    alert(people.toLocaleString());     //HotHunter,meishaonv
+
+！：console.log和alert：
+console.log可以打印任何类型数据。而alert()只能打印String，如果alert输出的是对象，自动调用toString()。
+    
+    console.log(people);                    //[Object, Object];
+    console.log(people.toString());         //Hot,msn
+    console.log(people.toLocaleString());   //HotHunter.meishaonv
+
+数组集成的toLocaleString()/toString()/valueOf()在默认情况下都会以逗号分隔的字符串形式返回数组项。
+使用join()方法可以使用不同的分隔符构建这个字符串
+
+    var colors = ["red" ,"blue", "green"];
+    alert(colors.join(","));        //red,blue,green
+    alert(colors.join("||"));       //red||blue||green
+
+
+栈方法：
+栈数据结构的访问规则是LIFO（后进先出）。
+数组可以表现栈，可以限制插入和删除项的数据结构。最新添加的项最早被移除。栈中的推入和弹出只发生在栈的顶部。
+push()/pop()--推入、弹出。
+push()接收任意数量的参数，诸葛添加到数组末尾，返回修改后数组的长度。
+pop()从数组末尾一处最后一项，减少数组的length，返回溢出的项。
+
+    var colors = new Array();
+    var count = colors.posh("red", "green");        //推入两项
+    alert(count);       //2
+    //
+    count = colors.push("black");           //推入一项
+    alert(count);       //3
+    //
+    var item = colors.pop();
+    alert(item);            //"black"
+    alert(colors.length);       //2
+
+可以将栈方法和数组其他方法一同使用：
+
+    var colors = ["red", "blue"];
+    colors.push("brown");
+    colors[3] = "black";
+    alert(colors.length);       //4
+    //
+    var item = color.pop();
+    alert(item);        //"black"
+
+队列方法：
+
+栈数据结构的访问规则是LIFO（后进先出）。
+队列数据结构的访问规则是FIFO（先进先出）。队列在列表的末端加项，从列表的前端移除项。
+shift()，一处数组中第一个项并返回该项，结合push()实现队列一样使用数组
+
+    var colors = new Array();
+    var count = colors.push("red", "green");
+    alert(count);   //2
+    //
+    count = colors.push("black");
+    alert(count);   //3
+    //
+    var item = colors.shift();
+    alert(item);    //"red"
+    alert(colors.length);       //2
+
+unshift()：在数组前端添加任意个项并返回新数组的长度。
+
+    var colors = new Array();
+    var count = colors.unshift("red", "green");
+    alert(count);   //2
+    //
+    count = colors.unshift("black");
+    alert(count);   //3
+    //
+    var item = colors.pop();
+    alert(item);        //"green"
+    alert(colors.length);       //2
+
+重排序方法：
+reverse():反转数组项的顺序。
+sort():默认情况按牲畜排列数组项（上大后小）。调用每个数组项的toString()，然后比较得到字符串，确定排序。即使数组每一项都是数值，sort()比较的也是字符串
+
+    var values = [1, 2, 3, 4, 5];
+    values.reverse();
+    alert(values);      //5, 4, 3, 2, 1
+
+    var values = [0, 1, 5, 10, 15];
+    values.sort();
+    alert(values);      //0,1,10,15,5
+
+sort()接受一个比较函数作为参数，以便制定哪个值位于前面。
+比较函数接收两个参数，如果第一个参数应该位于第二个之前则返回负数，如果两个参数相等返回0，第一个参数位于第二个之后返回正数。
+
+    function compare(value1, value2) {
+        if (value1 < value2) {
+            return -1;
+        } else if (value1 > value2) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+        //
+    var values = [0, 1, 5, 10, 15];
+    values.sort(compare);
+    alert(values);          //0, 1, 5, 10, 15
+
+reverse()和sort()方法的返回值是经过排序之后的数组。
+
+更简单的比较函数：
+
+    function compare(value1, value2){
+        return value2 - value1;
+    }
+    
+    var values = [2,5,6,44,8];
+    alert(values.sort(compare));        //44, 8, 6, 5, 2
+
+
+操作方法:
+
+concat():给予当前数组中的所有项创建一个新数组。
+当传递给concat()的是一个或多个数组，方法会将浙西额数组中的每一项都添加到结果数组中。如果传递的值不是数组，就会被简单地添加到结果数组的末尾。
+
+    var colors = ["red", "green", "blue"];
+    var colors2 = colors.concat("yellow", ["black", "brown"]);
+         
+    alert(colors);          //red,green,blue
+    alert(colors2);         //red,green,blue,yellow,black,brown
+
+
+slice():基于当前数组中的一或多个项创建一个新数组。
+只有一个参数：slice()返回从该参数制定位置开始到当前数组末尾的所有项。
+两个参数：返回其实和结束为止之间的项，但不包括结束为止的项。不影响原始数组。
+
+    var colors = ["red", "green", "blue", "yellow", "purple"];
+    var colors2 = colors.slice(1);
+    var colors3 = colors.slice(1,4);
+            
+    alert(colors2);         //green,blue,yellow,pruple
+    alert(colors3);         //green,blue,yellow
+
+如果参数中有一个负数，则用数组长度加上该数来确定相应的位置。
+在一个包含5项的数组，slice(-2,-1) == slice(3,4)。如果结束位置小于起始位置，返回空数组。
+
+
+splice():主要用途项数组插入项。始终返回一个数组，返回被删除的项，若没删除任何项，返回空。
+* 删除：删除任意数量项。splice(起始位置，删除的项数)。splice(0,2)删除数组的前两项。
+* 插入：项指定位置插入任意数量的项。splice(起始位置,0(删除的项数),要插入的项); splice(2,0,"red","green")。
+* 替换：向指定位置插入任意数量的项，同事删除任意数量的项。splice(起始位置,删除的项数，要插入的项);     splice(2,1,"green","red")。
+
+    var colors = ["red", "green", "blue"];
+    var removed = colors.splice(0,1);
+    alert(colors);      //green,blue
+    alert(removed);     //red
+        
+    removed = colors.splice(1, 0, "yellow", "orange");
+    alert(colors);      //green,yellow,orange,blue
+    alert(removed);     //空数组
+        
+    removed = colors.splice(1, 1, "red", "purple");
+    alert(colors);      //green,red,purple,orange,blue
+    alert(removed);     //yellow
+
+
+位置方法：
+indexOf()/lastIndexOf()：
+两个参数：要查找的项和（可选）表示查找起点位置的索引。indexOf()从数组开始查找，lastIndexOf()从数组末尾开始查找。
+都返回要查找的项在数组中的外置(下标)，没找到返回-1。要求查找的项必须全等(===)
+
+    var numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+     
+    alert(numbers.indexOf(4));          //3
+    alert(numbers.lastIndexOf(4));      //5
+      
+    alert(numbers.indexOf(4, 4));       //5
+    alert(numbers.lastIndexOf(4, 4));   //3
+        
+    var person = {name: "Hothunter"};
+    var people = [{name: "Hothunter"}];
+    
+    var morePeople = [person];
+    
+    alert(people.indexOf(person));      //-1
+    alert(morePeople.indexOf(person));  //0
+
+
+
+迭代方法：
+每个方法接收两个参数：
+要在每一项上运行的函数和该函数的作用域对象（可选）--影响this的值。
+传入这些方法中的函数会接收三个参数，数组项的值、该项在数组中的位置和数组对象本身。
+根据使用方法不同，返回值不能确定会不会被该函数影响。
+* every()：对数组的每一项运行函数。均true，则true。
+* filter()：对数组的每一项运行函数。返回该函数会返回ture的项组成的数组。
+* forEach()：对数组的每一项运行函数。无返回值。
+* map()：对数组的每一项运行函数。返回每次函数调用的结果组成的数组。
+* some()：对数组的每一项运行函数。任一项返回true，返回true。
+以上方法均不修改原数组值。
+
+    var numbers = [1, 2, 3, 4, 5, 4, 3, 2, 1];
+      
+    var everyResult = numbers.every(function(item, index, array){
+        return (item > 2);
+        });
+    alert(everyResult);     //false
+    
+    var someResult = numbers.some(function(item, index, array){
+        return (item > 2);
+        });
+    alert(someResult);      //true
+    
+    var filterResult = numbers.filter(function(item, index, array){
+        return (item > 2);
+        });
+    alert(filterResult);    //[3,4,5,4,3]
+    
+    var mapResult = numbers.map(function(item, index, array){
+        return (item * 2);
+        });
+    alert(mapResult);       //[2,4,6,8,10,8,6,4,2]
+    
+    numbers.forEach(function(item, index, array){
+        doSomeThing();
+        });
+
+最后一个forEach()，只是对数组中的每一项运行传入的函数。没有返回值，本质上与使用for循环迭代数组一样。
+
+
+归并方法：
+
+reduce()和reduceRight()：
+迭代数组的所有项，构建一个最终返回的值。
+reduce()方法从数组的第一项开始，遍历到最后。
+reduceRight()方法从数组最后一项开始，向前遍历到第一项。
+都接收两个参数：一个在每一项调用的函数和作为归并基础的初始值（可选）。
+传给reduce()和reduceRight()的函数接收4个参数：前一个值、当前值、项的索引和数组对象。这个函数返回的任何值都会作为第一个参数自动传给下一项。第一次迭代发生在数组第二项上，因此第一个参数是数组的第一项，第二个参数就是数组第二项。
+
+    var values = [1, 2, 3, 4, 5];
+    var sum = values.reduce(function(prev, cur, index, array){
+        return prev + cur;
+        });
+    alert(sum);         //15
+    
+    var sum2 = values.reduceRight(function(prev, cur, index,array){
+        return prev + cur;
+        });
+    alert(sum2);        //15
+
+
+#### Date类型
+
+    var now = new Date();
+
+Date.parse()/Date.UTC()
+
+    var someDate = new Date(Date.parse("May 25, 2004"));
+    var someDate = new Date("May 25, 2004");        // === ↑
+    
+    var y2k = new Date(Date.UTC(2000, 0));      //GMT时间2000/01/01午夜零时
+    var allFives = new Date(Date.UTC(2005,4,5,17,55,55));   //GMT时间2005/05/05 5:55:55
+
+Date.now()，返回表示调用这个方法时的日期和时间的毫秒数。
+
+    var start = Date.now();
+    doSomething();
+    var stop = Date.new();
+    var useTime = stop - start;
+
+    var start = +new Date();
+    doSomething();
+    var stop = +new Date();
+    var useTime = stop -start;          // ← === ↑
+
