@@ -1036,7 +1036,7 @@ unshift()：在数组前端添加任意个项并返回新数组的长度。
 
 重排序方法：
 reverse():反转数组项的顺序。
-sort():默认情况按牲畜排列数组项（上大后小）。调用每个数组项的toString()，然后比较得到字符串，确定排序。即使数组每一项都是数值，sort()比较的也是字符串
+sort():默认情况按升序排列数组项（上大后小）。调用每个数组项的toString()，然后比较得到字符串，确定排序。即使数组每一项都是数值，sort()比较的也是字符串
 
     var values = [1, 2, 3, 4, 5];
     values.reverse();
@@ -1230,3 +1230,633 @@ Date.now()，返回表示调用这个方法时的日期和时间的毫秒数。
     var stop = +new Date();
     var useTime = stop -start;          // ← === ↑
 
+
+继承的方法：
+
+同样重写了toString()/toLoaleString()/valueOf()方法。前两个不同浏览器返回格式也不同，同时也只在调试时有用。
+valueOf()不反悔字符串，而是返回日期的毫秒。
+
+    var date1 = new Date(2007, 0, 1);       //"January 1, 2007"
+    var date2 = new Date(2007, 1, 1);       //"February 1, 2007"
+    
+    alert(date1 < date2);       //true
+    alert(date1 > date2);       //false
+
+
+日期格式化方法：
+将日期格式化为字符串
+toDateString()/toTimeSting()/toLocaleDateStrig()/toLocaleTimeString()/
+toUTCString()
+以上字符串格式方法的输出也是因浏览器而异，所以没有哪一个方法用来在用户界面中使用。
+
+    
+日期、时间组件方法：
+表太长了我不写了。P102，用到了自己查吧。
+
+
+#### RegExp类型
+
+ECMAScript通过RegExp类型支持正则表达式。
+    
+    var expression = / pattern / flags ;
+
+模式（pattern）只带正则表达式，可以包含字符类，限定符，分组，向前查找以及反响引用。每个正则表达式都可以带有一个或多个标志（flags），用以标明正则表达式的行为。
+* g：表示全局（global）模式，应用于所有字符串，而非在发现第一个匹配项时立即停止。
+* i:表示不区分大小写（case-insensitive）模式，即在确定匹配项时忽略模式与字符串的大小写；
+* m：表示多行（multiline）模式，在到达一行文本末尾时还会继续查找下一行中是否存在于模式匹配的项。
+
+    //匹配字符串中所有的“at”
+    var pattern1 = /at/g;
+    
+    //匹配第一个“bat”或“cat”，不区分大小写
+    var pattern2 = /[bc]at/i;
+    
+    //匹配所有已“at”结尾的3个字符的组合，不区分大小写
+    var pattern3 = /.at/gi;
+
+模式中使用的 元字符 都必须转移，包括：
+(  [  {  \  ^  |  )  ?  *  +  .  ]  }
+
+    //匹配第一个“bat”或“cat”，不区分大小写
+    var pattern1 = /[bc]at/i;
+    
+    //匹配第一个" [bc]at"  ，不区分大小写
+    var pattern2 = /\[bc\]at/i;
+    
+    //匹配所有以“at”结尾的3个字母的组合，不区分大小写
+    var pattern3 = /.at/gi;
+    
+    //匹配所有".at" ， 不区分大写小写
+    var pattern4 = /\.at/gi;
+
+使用RegExp构造函数，两个参数：要匹配的字符串模式，可选的标志字符串。
+
+    //匹配第一个“bat”或“cat”，不区分大小写
+    var pattern1 = /[bc]at/i;
+    
+    //与pattern1相同，使用构造函数：
+    var pattern2 = new RegExp("[bc]at", "i");
+
+    var re = null,
+        i;
+    for (i = 0; i < 10; i++){
+        re = /cat/g;
+        re.test("catastrophe");
+    }
+    for (i = 0; i < 10; i++){
+        re = new RegExp("cat", "g");
+        re.test("catastrophe");
+    }
+
+以上两种方法，在ECMAScript5之后没有区别。
+
+
+RegExp实例属性：
+* global：布尔值，表示是否设置了g。
+* ignoreCase：布尔值，表示是否设置了i。
+* lastIndex：正数，表示开始搜索下一个匹配项的字符位置，从0算起。
+* multiline：布尔值，表示是否设置了m。
+* source：正则表达式的字符串表示，按照字面量形式而非传入构造函数中的字符串模式返回。
+
+虽然方法多，不过都没什么用，因为构造的时候都写清楚了。
+
+    var pattern1 = /\[bc]at/i;
+    
+    alert(pattern1.global);         //false
+    alert(pattern1.ignoreCase);     //true
+    alert(pattern1.lastIndex);      //0
+    alert(pattern1.multline);       //false
+    alert(pattern1.source);         //"\[bc\]at"
+    
+    var pattern2 = new RegExp("\\[bc\\]at", "i");
+    
+    alert(pattern1.global);         //false
+    alert(pattern1.ignoreCase);     //true
+    alert(pattern1.lastIndex);      //0
+    alert(pattern1.multline);       //false
+    alert(pattern1.source);         //"\[bc\]at"
+
+
+RegExp实力方法：
+exec()：一个参数：要应用模式的字符串，返回包含第一个匹配项信息的数组；没有匹配项的情况返回null。同时包含两个额外的属性：index和input。index表示匹配项在字符串的位置，input表示应用正则的字符串。
+
+    var text = "mom and dad and baby";
+    var pattern = /mom( and dad( and baby)?)?/gi;
+    
+    var matches = pattern.exec(text);
+    alert(matches.index);       //0
+    alert(matches.input);       //"mom and dad and baby"
+    alert(matches[0]);          //"mom and dad and baby"
+    alert(matches[1]);          //" and dad and baby"
+    alert(matches[2]);          //" and baby"
+
+    var text = "cat, bat, sat, fat";
+    var pattern1 = /.at/;
+    
+    var matches = pattern1.exec(text);
+    alert(mathces.index);           //0
+    alert(mathces.[0]);             //cat
+    alert(pattern1.lastIndex);      //0
+    
+    matches = pattern1.exec(text);
+    alert(mathces.index);           //0
+    alert(mathces.[0]);             //cat
+    alert(pattern1.lastIndex);      //0
+    
+    var pattern2 = /.at/g;
+    
+    var matches = pattern2.exec(text);
+    alert(matches.index);           //0
+    alert(matches[0]);              //cat
+    alert(pattern2.lastIndex);      //3
+    
+    matches = pattern2.exec(text);
+    alert(matches.index);           //5
+    alert(matches[0]);              //bat
+    alert(matches.lastIndex);       //8
+
+pattern2是全局模式，因此每次调用exec()都会返回字符串中的下一个匹配项，直至搜索到字符串末尾为止。
+同时在全局模式下，lastIndex的值在每次调用exec()后都会增加，而在非全局模式下保持不变。
+
+test()：接受一个字符串参数。匹配是返回true，否则false。
+
+    var text = "000-00-0000";
+    var pattern = /\d{3}-\d{2}-\d{4}/;
+    
+    if(pattern.test(text)){
+        alert("the pattern was matched.");
+    }
+
+RegExp竭诚toLacaleString()和toString()都会返回正则表达式的字面量，与创建方式无关。
+
+    var pattern = new RegExp("\\[bc\\]at", "gi");
+    alert(pattern.toString());          //  /\[bc\]at/gi
+    alert(pattern.toLacaleString());    //  /\[bc\]at/gi
+
+
+RegExp构造函数属性
+这些属性适用于作用域中所有正则表达式，并且给予所执行的最近一次正则表达式操作而变化。  
+* input  $_  最近一次要匹配的字符串
+* lastMatch   $&   最近一次的匹配项
+* lastParen   $+   最近一次匹配的捕获组
+* leftContext   $`   input字符串中lastMatch之前的文本
+* multiline   $*   布尔值，表示是否所有表达式都使用多行模式
+* regitContext   $'   Input字符串中LastMatch之后的文本
+
+    var text = "this has been a short summer";
+    var pattern = /(.)hort/g;
+    
+    //注意：Opera不支持input、lastMatch、lastParen和multilne属性
+    //IE不支持multiline属性
+    if (pattern.test(text)){
+        alert(RegExp.input);            //this has been a short summer
+        alert(RegExp.leftContext);      //this has been a
+        alert(RegExp.rightContext);     //summer
+        alert(RegExp.lastMatch);        //short
+        alert(RegExp.lastParen);        //s
+        alert(RegExp.multiline);        //false
+    }
+
+    var text  "this has been a short summer";
+    var pattern = /(.)hort/g;
+    
+    if(pattern.test(text)){
+        alert(RegExp.$_);               //this has been a short summer
+        alert(RegExp["$`"]);            //this has been a
+        alert(RegExp["$'"]);            //summer
+        alert(RegExp["$&"]);            //short
+        alert(RegExp["$+"]);            //s
+        alert(RegExp["$*"]);            /false
+    }
+
+除此以外还有九个用于村粗捕获组的够赞函数属性。分别用于存储第一到第九个匹配的捕获组，在调用exec()/test()是，这些属性会被自动填充。
+    
+    var text = "this has been a short summer";
+    var pattern  = /(..)or(.)g;
+    
+    if(pattern.test(text)){
+        alert(RegExp.$1);           //sh
+        alert(RegExp.$2);           //t
+    }
+
+
+模式的局限性：
+ECMAScript值不支持一些高级正则表达式的特性。
+* 匹配字符串开始和结尾的\A和\Z锚
+* 向后查找（lookbehind）
+* 并集和交集类
+* 原子组（atomic grouping)
+* Unicode支持（单个字符除外，如\uFFFF）
+* 命名的捕获组
+* s（single,单行）和x（free-spacing,无间隔）匹配模式
+* 条件匹配
+* 正则表达式注释
+
+
+#### Function 类型
+
+函数即为对象，每个函数都是Function类型的实例，都与其他引用类型一样具有属性和方法。函数名实际上也即是一个纸箱函数对象的指针，不会与某个函数绑定。
+
+    function sum(num1, num2){
+        return num1 + num2;
+    }
+    ===
+    var sum = function(num1, num2){
+        return num1 + num2;
+    };
+
+    var sum = new Function("num1", "num2", "return num1+num2"); //不推荐
+
+
+函数名仅仅是纸箱函数体的指针，一个函数可能有多个名字
+
+    function sum(num1 , num2){
+        return num1 + num2;
+    }
+    alert(sum(10, 10));         //20
+    
+    var anotherSum = sum;
+    alert(anotherSum(10, 10));  //20
+    
+    sum = null;
+    alert(anotherSum(10, 10));  //20
+
+
+没有重载：
+ECMAScript中没有重载的概念
+    
+    var addSomeNumber = function (num){
+        return num + 100;
+    };
+    
+    addSomeNumber = function(num){
+        return num + 200;
+    };
+    
+    var result = addSomeNumber(100);        //300
+
+后创建的函数会覆盖先创建的函数。
+
+
+函数声明与函数表达式：
+
+解析器在想执行环境中加载数据时，对函数声明和函数表达式处理不同。解析器会率先读取函数声明，并使其在执行任何代码之前可用；至于函数表达式，则必须等到解析器执行到它所在的代码行，才会真正被解释执行。
+    
+    alert(sum(10, 10));
+    function sum(num1, num2){
+        return num1 + num2;
+    }
+
+可以正常运行，代码在开始执行之前，通过一个函数声明提升（function declaration hoisting）的过程，读取并将函数声明添加到执行环境中。
+
+    alert(sum(10, 10));
+    var sum = function(num1 , num2){
+        return num1 + num2;
+    };
+以上代码在运行期间产生错误，因为函数位于一个初始化语句中，而不是一个函数中。
+除了什么时候可以通过变脸高方文函数这一点区别之外，函数声明与函数表达式的语法其实是等价的。
+
+
+作为值得函数：
+因为函数本身就是变量，所以函数可以作为值来使用。也就是说，不仅可以像传递参数一样把一个函数传递给另一个函数，而且可以将一个函数作为另一个函数的结果返回。
+
+    function callSomeFunction(someFunction, someArgument){
+        return someFunction(someArgument);
+    }
+
+    function add10(num){
+        return num + 10;
+    }
+    
+    var result1 = callSomeFunction(add10, 10);
+    alert(result1);         //10
+    
+    function getFreeting(name){
+        return "Hello, " + name;
+    }
+    
+    var result2 = callSomeFunction(getFreeting, "HotHunter");
+    alert(result2);         //  "Hello, HotHunter"
+
+也可以从一个函数返回另一个函数。
+
+    function createComparisonFunction(propertyName){
+        return function(object1, object2){
+            var value1 = object1(propertyName);
+            var value2 = object2(propertyNmae);
+            if (value1 < value2){
+                return -1;
+            }
+            else if(value1 > value2){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        };
+    }
+
+    var data = [{name: "zachary", age: 28}, {name: "Nicholas", age: 29}];
+    
+    data.sort(createComparisonFunction("name"));
+    alert(data[0].name);        //Nicholas
+    
+    data.sort(createComparisonFunction("age"));
+    alert(date[0].name);        //Zachary
+
+
+函数内部属性：
+arguments / this
+arguments:类数组对象，包含传入函数的所有参数。包含一个callee的属性，指向拥有这个arguments对象的额函数。
+    
+    function factorial(num){
+        if (num <= 1){
+            return 1;
+        }else {
+            return num * factorial(num - 1);
+        }
+    }
+
+定义阶乘函数一般都要用到递归算法，上面函数有名字，并且之后名字不会改变的情况下，这样定义么有问题。但是这个函数执行与函数名factoial仅仅耦合。为了消除这种紧密耦合的现象，就可以使用arguments.callee.
+
+    function factorial(num){
+        if (num <= 1){
+            return 1;
+        } else {
+            return num * arguments.callee(num - 1);
+        }
+    }
+
+此时当函数名重写时，都可以保证正常完成递归。
+
+    var truefactorial = factorial;
+    factorial = function(){
+        return 0;
+    }
+    alert(trueFactorial(5));
+    alert(factorial(5));
+
+this：引用的是函数执行的环境对象，当在网页的去阿奴作用域中调用函数时，this对象阴阳的就是window。
+
+    window.color = "red";
+    var o = {color : "blue"};
+    
+    function sayColor(){
+        alert(this.color);
+    }
+    
+    sayColor();     //"red"
+    
+    o.sayColor = sayColor;
+    o.sayColor();       //"blue"
+
+caller：保存着调用当前函数的函数的引用，在全局作用域中调用当前函数，值为null。
+
+    function outer(){
+        inner();
+    }
+    function inner(){
+        alert(inner.caller);
+    }
+    outer();
+
+以上代码将返回outer的函数源代码，为了防止耦合：
+
+    function outer(){
+        inner();
+    }
+    function inner(){
+        alert(arguments.callee.caller);
+    }
+    outer();
+
+
+函数的属性和方法：
+每个函数都包含两个属性：length和prototype
+length返回函数参数个数。
+
+    fucntion sayName(name){
+        alert(name);
+    }
+    function sum(num1, num2){
+        return num1 + num2;
+    }
+    function sayHi(){
+        alert("hi");
+    }
+    
+    alert(sayName.length);          //1
+    alert(sum.length);              //2
+    alert(sayHi.length);            //0
+
+prototype：保存它们所有实例方法的真正所在。例如toString()/valueOf()都保存在prototype名下，通过各自对象的实例访问。
+每个函数都包含两个非继承的方法。apply()/call()。两个方法的用于都是在特定的作用与众调用函数，实际上等于设置函数体内的this的值。
+
+apply()：接收两个参数：一个是在其中运行函数的作用域，另一个是参数数组，可以是Array实例对象，也可以是arguments对象。
+
+    function sum(num1, num2){
+        return num1 + num2;
+    }
+    function callSum1(num1, num2){
+        return sum.apply(this, arguments);
+    }
+    function callSum2(num1, num2){
+        return sum.apply(this, [num1, num2]);
+    }
+    
+    alert(callSum1(10, 10));            //20
+    alert(callSum2(10, 10));            //20
+
+call()：与apply的区别在于接收参数不同，第一个参数this没有变化，剩下的参数都直接传递给函数。
+
+    function sum(num1, num2){
+        return num1 + num2;
+    }
+    function callSum(num1, num2){
+        return sum.call(this, num1, num2);
+    }
+    alert(callSum(10, 10));             //20
+
+apply()、call()真正作用在于扩充函数赖以运行的作用域
+
+    window.color = "red";
+    var o = {color : "blue"};
+    
+    function sayColor(){
+        alert(this.color);
+    }
+    
+    sayColor();         //red
+    
+    sayColor.call(this);            //red
+    sayColor.call(window);          //red
+    sayColor.call(o);               //blue
+
+好处就是，对象不需要与方法有任何耦合关系
+
+bind()：创建一个函数实例，其this值会被绑定到传给bind()函数的值。
+
+    window.color = "red";
+    var o = {color : "blue"};
+    
+    function sayColor(){
+        alert(this.color);
+    }
+    
+    var objectSayColor = sayColor.bind(o);
+    objectSayColor();           //blue
+
+每个函数继承的toLocaleString()/toString()/valueOf()返回函数代码
+
+
+#### 基本包装类型
+
+3个特殊的Boolean/Number/String。
+与其他引用类型类似，同事也具有哦与各自的基本类型相应的特殊行为。当读取一个基本类型值的时候，后台会创建一个对应的基本包装类型的对象。
+
+    var s1 = "some text";
+    var s2 = s1.substring(2);       //me text
+
+上述实际操作：
+创建String类型的一个实例；
+在实例上调用指定的方法；
+销毁这个实例。
+
+    var s1 = new String("some text");
+    var s2 = s1.substring(2);
+    s1 = null;
+
+引用类型与基本包装类型的主要区别就是对象的生存期。使用new操作符创建的引用类型的实例，在执行流离开当前作用域之前都一直保存在内存中。而自动创建的基本包装类型的对象，则只存在于一行代码的执行瞬间，然后立刻被销毁。意味着不能再运行时为基本类型值添加属性和方法。
+
+    var s1 = "some text";
+    s1.color = "red";
+    alert(s1.color);        //underfined
+
+在绝对必要的情况下这样做，因为很容易让人分不清自己是在处理基本类型还是引用类型的值。
+注意使用new调用基本包装类型的够赞函数，与直接调用同名的转型函数时不一样的。
+
+    var value = "25";
+    var number = Number(value);     //转型函数
+    alert(typeof number);           //"number"
+    
+    var obj = new Number(value);
+    alert(typeof obj);              //"object"
+
+
+Boolean类型：
+
+    var booleanObject = new Boolean(true);
+
+    var falseObject =  new Bollean(false);
+    var result = falseObject && true;
+    alert(result);          //true
+    
+    var falseValue = false;
+    result = falseValue && true;
+    alert(result);          //false
+
+基本类型和引用类型的boolean的区别：typeof操作符对基本类型返回"boolean"，对引用类型返回"object"。其次，由于Boolean对象是Boolean类型的实例，所以使用instanceof操作符测试Boolean对象会返回true，而测试基本类型的布尔值则返回false。
+
+    alert(typeof falseObject);          //object
+    alert(tyeof falseValue);            //boolean
+    alert(falseObject instanceof Boolean);          //true
+    alert(falseVlue instanceof Boolean);            //false
+
+建议永远不要使用Boolean对象。
+
+
+Number类型：
+
+    var numberObject = new Number(10);
+
+    var num = 10;
+    alert(num.toString());          //"10"
+    alert(num.toString(2));         //"1010"
+    alert(num.toString(8));         //"12"
+    alert(num.toString(10));        //"10"
+    alert(num.toString(16));        //"a"
+
+toFixed()按照指定的小数位返回数值的字符串表示：
+
+    var num = 10;
+    alert(num.toFixed(2));          //"10.00"
+
+    var num = 10.005;
+    alert(num.toFixed(2));          //"10.01"
+
+toExponential()：返回以指数表示的数值的字符串。
+
+    var num = 10;
+    alert(num.toExponential(1));            //"1.0e+1"
+
+toPrecision()：可能返回fixed格式，也可能返回exponential格式。会根据要处理的数值决定是调用toFixed()还是toExponential()。
+
+    var num = 99;
+    alert(num.toPrecision(1));          //"1e+2"
+    alert(num.toPrecision(2));          //"99"
+    alert(num.toPrecision(3));          //"99.00"
+
+与Boolean类似，Number也可以实例化。但不推荐。
+
+    var numberObject = new Number(10);
+    var numberValue = 10;
+    
+    alert(typeof numberObject);         //"object"
+    alert(typeof numberValue);          //"number"
+    alert(numberObject instanceof Number);      //true
+    alert(numberValue instanceof Number);       //false
+
+
+
+String类型：
+
+    var stringObject = new String("some text");
+
+用构造函数创建的String类型，继承的valueOf()/toString()/toLocaleString()都返回对象表示的基本字符串值。
+String类型的每个实例都有一个length属性，返回字符串中字符数量。
+
+    var stringValue = "hello world";
+    alert(stringValue.length);          //"11"
+
+字符方法：
+
+charAt()：接收一个参数，基于0的字符位置，以单字符字符串的形式返回给定位置的那个字符。
+
+    var stringValue = "hello world";
+    alert(stringValue.charAt(1));       //"e"
+
+charCodeAt()：接收一个参数，基于0的字符位置，返回字符编码
+
+    var stringValue = "hello world";
+    alert(stringValue.charCodeAt(1));       //"101"
+
+另一个访问单个字符的方法：
+
+    var stringValue = "hello world";
+    alert(stringValue[1]);          //"e"
+
+
+字符串方法：
+
+concat()：将一个或多个字符串拼接，返回拼接得到的新字符串。而且同时可以接收任意多个字符串作为参数进行拼接。
+
+    var stringValue = "hello ";
+    var result = stringValue.concat("world");
+    alert(result);      //"hello world"
+    alert(stringValue); //"hello "
+
+    var stringValue = "hello ";
+    var result = stringValue.concat("world", "!", " and", " fuck me", "!")
+    alert(result);      //"hello world! and fuck me!"
+    alert(stringValue); //"hello "
+
+但是在实践中更多使用（+）操作符。简便易行。
+
+slice()/substr()/substring()：截取字符串，不会修改字符串本身
+
+    var str = "hello world";
+    alert(str.slice(3));        //"lo world"
+    alert(str.substring(3));    //"lo world"
+    alert(str.substr(3));       //"lo world"
+    alert(str.slice(3, 7));     //"lo w"
+    alert(str.)
