@@ -1859,4 +1859,1628 @@ slice()/substr()/substring()：截取字符串，不会修改字符串本身
     alert(str.substring(3));    //"lo world"
     alert(str.substr(3));       //"lo world"
     alert(str.slice(3, 7));     //"lo w"
-    alert(str.)
+    alert(str.subtring(3, 7));  //"lo w"
+    alert(str.substr(3, 7));    //"lo worl"
+
+参数存在负数值：
+
+    var str = "hello world";
+    alert(str.slice(-3));               //"rld"
+    alert(str.substring(-3));           //'hello world'
+    alert(str.substr(-3));              //"rld"
+    alert(str.slice(3, -4));            //"lo w"
+    alert(str.substring(3, -4));        //"hel"
+    alert(str.substr(3, -4));           //""
+
+
+
+字符串位置方法：
+
+indexOf()/lastIndexOf()：从一个字符串中搜索给定的字符串，返回字符串的位置（没有找到返回-1）。
+indexOf()从开头向后搜索，lastIndexOf()从末尾向前搜索。
+
+    var stringValue = "hello world";
+    alert(stringValue.indexOf("o"));            //4
+    alert(stringValue.lastIndexOf("o"));        //7
+
+两个方法可接收第二个参数：表示从字符串中的哪个位置开始搜索。
+
+    var string = "hello world";
+    alert(string.indexOf("0", 6));          //7
+    alert(string.lastIndexOf("o", 6));      //4
+
+在使用第二个参数情况下，通过循环调用这两个方法来找到所有匹配的子字符串
+
+    var string = "Lorem ipsum dolor sit amet, comsectetur adipisicing elit";
+    var positions = new Array();
+    var pos = string.indexOf("e");
+    
+    while (pos > -1){
+        positions.push(pos);
+        pos = string.indexOf("e", pos + 1);
+    }
+    
+    alert(positions);       "3,24,32,35,52"
+
+
+trim()：
+创建一个字符串副本，删除前置及后缀的所有空格，然后返回结构。
+由于返回字符串副本，所以原始字符串保持不变。
+同时还有非标准的:trimLeft()/trimRight()
+
+    var string = "     hello world       ";
+    var trimmedString = string.trim();
+    alert(string);          //"     hello world       "
+    alert(trimmedString);       //"hello world"
+
+
+字符串大小写转换方法：
+toLowerCase()/toLocaleLowerCase()/toUpperCase()/toLocaleUpperCase()
+
+    var string = "hello world";
+    alert(string.toLocaleUpperCase());          //"HELLO WORLD"
+    alert(string.toUpperCase());                //"HELLO WORLD"
+    alert(string.toLocaleLowerCase());          //"hello world"
+    alert(string.toLowerCase());                //"hello world"
+
+
+字符串的模式匹配方法：
+match()：在字符串上调用这个方法，本质上与调用RegExp的exec()方法相同。
+只接受一个参数，一个正则表达式或者一个RegExp对象
+
+    var text = "cat, bat, sat, fat";
+    var pattern = /.at/;
+    
+    //与pattern.exec(text)相同
+    var matches = text.match(pattern);
+    alert(matches.index);           //0
+    alert(matches[0]);              //"cat"
+    alert(pattern.lastIndex);       //0
+
+search()：参数与mathch()的相同，由字符串或RegExp对象指定的一个正则表达式，返回字符串中第一个匹配项的索引；没有找到匹配项，返回-1。
+
+    var text = "cat, bat, sat, fat";
+    var pos = text.search(/at/);
+    alert(pos);         //1
+
+replace()：替换字符串，两个参数：第一个可以是一个字符串或者一个RegExp对象（这个字符串不会被转换成正则表达式），第二个参数可以是一个字符串或者一个函数。
+
+    var text = "cat, bat, sat, fat";
+    var result = text.replace("at", "ond");
+    alert(result);          //"cond, bat, sat, fat"
+    
+    result = text.replace("/at/g", "ond");
+    alert(result);          //"cond, bond, sond, fond"
+
+如果第二个参数是字符串，那么可以使用一些特殊的字符序列，将正则表达式操作得到的值插入到结果字符串中。
+
+* $$      ＄
+* $&      匹配整个模式的子字符串。=== RegExp.lastMatch
+* $'      匹配的子字符串之前的字符串。=== RegExp.leftContext
+* $`      匹配的子字符串之后的子字符串。 === RegExp.rightContext
+* $n      匹配第n个捕获组的子字符串
+* $nn     匹配第nn个捕获组的子字符串。
+
+end
+    
+    var text = "cat, bat, sat, fat";
+    result = text.replace(/(.at)/g, "word ($1)");
+    alert(result);      //word (cat), word (bat), word (sat), word(fat)
+
+如果第二个参数是函数，只有一个匹配项的情况下，回向这个函数传递3个参数：模式的匹配项、模式匹配项在字符串中的位置和原始字符串。这个函数返回一个字符串，表示应该被替换的匹配项。
+
+    function htmlEsape(text){
+        return text.replace(/[<>"&]/g, function(match, pos, originalText){
+            switch(match){
+                case "<":
+                    return "&lt;";
+                case ">":
+                    return "&gt;";
+                case "&":
+                    return "&amp;";
+                case "\":
+                    return "&quot;";
+            }
+        });
+    }
+    alert(htmlEscape("<p class=\"greeting\">Hello world!</p>"));
+        //&lt;p class=&quot;greeting&quot;&gt;Hello world!&lt;/p&gt;
+
+以上代码实现：使用正则表达式查找字符，然后定义一个能够针对每个匹配的字符餐返回特定HTML实体的函数。
+
+split()：基于制定的分隔符将一个字符串分割成多个字符串，放在一个数组中。分隔符可以是字符串，也可以是一个RegExp对象（但不会讲字符串看成正则）。可以接收第二个参数：用于制定数组的大小，防止返回的数组超过既定大小。
+
+    var colorText = "red,blue,green,yellow";
+    var colors1 = colorText.split(",");    //["red", "blue", "green", "yellow"]
+    var colors2 = colorText.split(",", 2);  //["red", "blue"]
+    var colors3 = colorText.split(/[^\,]+/);    //["", ",", ",", ",", ""]
+
+
+localeCompare()：比较两个字符串，返回：
+如果字符串在字母表中排在字符串参数之前，返回一个负数。
+如果字符串等于字符串参数，返回0；
+如果字符串在字母表中应该排在字符串参数之后，返回一个正数
+
+    var str = "yellow";
+    alert(str.localeCompare("brick"));          //1
+    alert(str.localeCompare("yellow"));         //0
+    alert(str.localeCompare("zoo"));            //-1
+
+localeCompare()返回的数值取决于实现
+
+    fucntion determineOrder(value){
+        var result = str.localeCompare(value);
+        if (result < 0){
+            alert("the string 'yellow' comes before the string '" +　value + "' .");
+        } else if (result > 0){
+            alert("the string 'yellow' comes after the string '" +　value + "' .");
+        } else {
+            alert("the string 'yellow' is equal to the string '" +　value + "' .");
+        }
+    }
+    determineOrder("brick");
+    determineOrder("yellow");
+    determineOrder("zoo");
+
+
+fromCharCode()：接收一个或多个字符编码，转换成一个字符串。从本质上看，这个方法与实例方法charCodeAt()执行的是相反的操作。
+
+    alert(string.fromCharCode(104, 101, 108, 111));     //"hello"
+
+
+HTML方法：
+不怎么用，P130自己翻书看吧。
+
+
+#### 单体内置对象
+
+已经被实例化，不需要显示地实例化。除了Object、Array、String
+还有Global和Math
+
+Gloal:
+不属于任何其他对象的属性和方法，最终都是它的属性和方法。所有在全局作用域中定义的属性和函数，都是Global的属性。例如isNaN()/isFinite()/parseInt()/parseFloat()
+
+URI编码方法：
+encodeURI()和encodeURIComponent()可以对URI编码，不能包含空格
+encodeURI()主要用于整个URI，不对本身属于URI的特殊字符编码，冒号，正斜杠，问号和#
+encodeURIComponent()用于对URI中的某一段进行编码。对它发现的任何非标准字符进行编码
+
+    var uri = "http://www.wrox.com/illegal value.htm#start";
+    
+    //"http://www.wrox.com/illegal%20value.htm#start"
+    alert(encodeURI(uri));
+    
+    //"http%3A%2F%2Fwww.wrox.com%2Fillegal%20value.htm%23start"
+    alert(encodeURIComponent(uri));
+
+与上面两个方法对应的，分别为：
+decodeURI()/decodeURIComponent()
+
+    var uri = "http%3A%2F%2Fwww.wrox.com%2Fillegal%20value.htm%23start";
+    
+    //http%3A%2F%2Fwww.wrox.com%2Fillegal value.htm%23start
+    alert(decodeURI(uri));
+    
+    //http://www.wrox.com/illegal value.htm#start
+    alert(decodeURIComponent(uri));
+
+
+eval()：
+类似一个完整的ECMAScript解析器，只接受一个参数。要执行的javascript字符串
+
+    var ("alert('hi')");
+    ==
+    alert("hi");
+
+    var msg = "hello world";
+    eval("alert(msg)");         //"hello world"
+
+    eval("function sayHi(){alert('hi');}");
+    sayHi();
+
+    eval("var msg = 'hello world'");
+    alert(msg);
+
+在eval()创建的任何变量或者函数都不会被提升，因为在解析代码的时候，被好汉在一个字符串中；只在eval()执行时被创建。
+
+
+global对象的属性：
+undefined / NaN / Infinity / Object / Array / Function / Boolean / String / Number / Date / RegExp / Error / EvalError / RangeError / ReferenceError / SyntaxError / TypeError / URIError
+明确禁止将undefined/NaN/Infinity赋值
+
+
+window对象：
+虽然无法直接访问Global对象，但Web浏览器都将这个全局对象作为window兑现给定而一部分加以实现。
+    
+    var color = "red";
+    function sayColor(){
+        alert(window.color);
+    }
+    window.sayColor();          //"red"
+
+另一种取得Global对象的方法：
+
+    var global = function(){
+        return this;
+    }();
+
+
+Math:
+对象属性：
+* Math.E            //自然对数的底数
+* Math.LN10         //10的自然对数
+* Math.LN2          //2的自然对数
+* Math.LOG2E        //以2为底e的对数
+* Math.LOG10E       //以10为底e的对数
+* Math.PI           //π的值
+* Math.SORT1_2      //1/2的平方根（2的平方根的倒数）
+* Math.SQRT2        //2的平方根
+
+<b>虽然讨论这些值的含义和用途超出了本书的范围，但你确实可以随时使用它们</b>
+
+min()和max():
+确定最大值和最小值。可以接收任意多个参数。
+
+    var max = Math.max(3, 54, 32, 16);
+    alert(max);         //54
+    
+    var min = Math.min(3, 54, 32, 16);
+    alert(min);         //3
+
+    var values = [1, 2, 3, 4, 5, 6, 7, 8];
+    var max = Math.max.apply(Math, values);
+
+把Math对象作为apply()的第一个参数，从而正确设置this。便可以将任何数组作为第二个参数。
+
+舍入方法：
+Math.ceil():向上舍入，总是将数值向上舍入为最接近的整数
+Math.floor()：向下舍入，总是将数值向下舍入为最接近的整数
+Math.round()：四舍五入为最接近的整数。
+
+    alert(Math.ceil(25.9));         //26
+    alert(Math.ceil(25.6));         //26
+    alert(Math.ceil(25.1));         //26
+    
+    alert(Math.floor(25.9));        //25
+    alert(Math.floor(25.6));        //25
+    alert(Math.floor(25.1));        //25
+    
+    alert(Math.round(25.9));        //26
+    alert(Math.round(25.6));        //26
+    alert(Math.round(25.1));        //25
+
+
+random()：
+
+Math.random()返回大于等于0 小于1的一个随机数。有公式：
+
+    值 = Math.floor(Math.random() * 可能值的总数 + 第一个可能值);
+
+    var num = Math.floor(Math.random() * 10 + 1);    
+
+    function selectFrom(lowerValue, upperValue){
+        var choices = upperValue - lowerValue + 1;
+        return Math.floor(Math.random() * choices + lowerValue);
+    }
+    
+    var num = selectFrom(2, 10);
+    alert(num);         //介于2和10之间（包括2和10）的一个随机数
+
+    var colors = ["red", "green", "blue", "yellow", "blace", "purple", "brown"];
+    var color = colors[selectFrom(0, colors.length-1)];
+    alert(color);           //可能是数组中包含的任何一个字符串
+
+其他方法：
+P136，一些高大上的Math方法
+
+---
+
+
+### 面向对象的程序设计
+
+面向对象类语言的共同特点：就是都有类的概念。基于类以创建任意多个具有相同属性和方法的对象。
+对象：无需属性的集合，起属性可以包含基本值、对象或者函数。
+每个对象都基于宇哥因引用类型创建，可以是原生类型，也可是自定义类型
+
+#### 理解对象
+
+名为person的对象，拥有三个属性（name/age/job），一个方法(sayName):
+
+    var person = new Object();
+    person.name = "hothunter";
+    person.age = 29;
+    person.job = "software engineer";       //niubi
+    
+    person.sayName = function(){
+        alert(this.name);
+    }
+
+    var person = {
+        name : "hothunter",
+        age : 29,
+        job : "software engineer",
+        sayName : function(){
+            alert(this.name);
+        }
+    };
+
+
+属性类型：
+包含一个数据值的位置。可以读取和写入。
+* [[Configurable]]:能否通过delete删除属性从而重新定义属性，能否修改属性的特性，或者能否把属性修改为访问器属性。
+* [[Enumerable]]:能否通过for-in循环返回属性。
+* [[Writable]]:能否修改属性的值。
+* [[Value]]:包含这个属性的数据值
+
+修改属性默认特性：Object.defineProperty()。三个参数：属性所在对象、属性名、描述符对象（configurable/enumerable/writable/value）。
+
+    var person = {};
+    Object.defineProperty(person, "name", {
+        writable: false,            //该name属性在此处被设置为只读
+        value: "hothunter"
+        });
+    
+    alert(person.name);         //"hothunter"
+    person.name = "lianhui";
+    alert(person.name);         //"hothunter"
+
+    var person = {};
+    Object.defineProperty(person, "name", {
+        configurable: false,            //在此处被设置为不可删除
+        value: "hothunter"
+        });
+    
+    alert(person.name);         //"hothunter"
+    delete person.name;         
+    alert(person.name);         //"hothunter"
+
+
+访问器属性：
+getter/setter函数。读取和写入访问器属性时，分别调用这两个函数。
+访问器属性特性：
+* [[Configurable]]:表示能否通过delete删除属性从而重新定义属性。
+* [[Enumerable]]:表示能否通过for-in 循环返回属性。
+* [[Get]]:在读取属性时调用的函数。默认undefined
+* [[Set]]:在写入属性时调用的函数。默认undefined
+
+仍然需要使用Object.defineProperty()定义
+    
+    var book = {
+        _year = 2015,
+        edition: 1
+    };
+    Object.defineProperty(book, "year", {
+        get: function(){
+            return this._year;
+        },
+        set: function(newValue){
+            if(newValue){
+                this._year = newValue;
+                this.edition += newValue - 2015;
+            }
+        }
+        });
+    
+    book.year = 2016;
+    alert(book.edition);            //2
+
+设置一个属性的值会导致其他属性发生变化。
+
+定义多个属性：
+Object.defineProperties():通过描述符一次定义定义多个属性。两个参数：要添加和修改其属性的对象；第二个对象的属性与第一个对象中要添加或修改的属性一一对应。
+
+    var book = {};
+    Object.defineProperties(book, {
+        _year : {
+            writable : true;
+            value : 2004
+        },
+        edition : {
+            writable : true,
+            value : 1
+        }，
+        year : function(){
+            get: function(){
+                return this._year;
+            },
+            set : function(newValue){
+            if(newValue > 2004) {
+                this._year = newValue;
+                this.edition += newValue - 2004;
+            }
+        }
+    }  
+    });
+
+
+读取属性的特性：
+
+Object.getOwnPropertyDescriptor()：取得给定属性的描述符。两个参数：所在的对象和要读取其描述符的属性名称。返回一个对象。
+
+    var book = {};
+    Object.defineProperties(book , {
+        _year : {
+            value : 2004
+        },
+        edition : {
+            value : 1
+        },
+        year : {
+            get : function(){
+                return this._year;
+            },
+            set : function(newValue){
+                if (newValue > 2004) {
+                    this._year = newValue;
+                    this.edition += newValue - 2004;
+                }
+            }
+        }
+        });
+    
+    var descrioptor = Object.getOwnPropertyDescriptor(book, "_year");
+    alert(descriptor.value);                //2004
+    alert(descriptor.configurable);         //false
+    alert(typeof descriptor.get);           //"undefined"
+    
+    var descriptor = Object.getOwnPropertyDescriptor(book, "year");
+    alert(descriptor.value);                //undefined
+    alert(descriptor.configurable);         //false
+    alert(typeof descriptor.get);           //"function"
+
+
+#### 创建对象
+
+之前创建对象的缺点：使用同一个接口常见很多对系那个，会产生大量的重复代码。
+
+工厂模式：
+
+抽象创建具体对象的过程。
+
+    function createPerson(name, age, job){
+        var o = new Object();
+        o.name = name;
+        o.age = age;
+        o.job = job;
+        o.sayName = function(){
+        alert(this.name);
+    };
+    return o;
+    }
+    
+    var person1 = createPerson("hothunter", 23, "software enginner");
+    var person2 = createPerson("lianhui", 9, "doubi");
+
+缺点：无法解决对象识别的问题（即怎样知道一个对象的类型）
+
+构造函数模式：
+
+以下代码经历四个步骤：
+1. 创建一个新对象；
+2. 将构造函数中的作用域给新对象（因此this指向新对象）；
+3. 执行构造函数中的代码（为新对象添加属性）；
+4. 返回新对象。
+
+    function Person(name, age, job){
+        this.name = name;
+        this.age = age;
+        this.job = job;
+        this.sayName = function(){
+            alert(this.name);
+        };
+    }
+    
+    var person1 = new Person("hothunter", 23, "noob");
+    var person2 = new Person("lianhui", 9, "motherfucker");
+
+与之前createPerson()相比，没有显示创建对象；直接将属相和方法赋给了this；没有return。
+够赞函数始终都应该以一个大写字母开头，非构造函数应该以一个小写字母开头。
+
+    alert(person1 instanceof Object);               //true
+    alert(person1 instanceof Person);               //true
+    alert(person2 instanceof Object);               //true
+    alert(person2 instanceof Object);               //true
+
+将构造函数当做函数：任何函数，只要通过new操作符来调用，那它就可以作为构造函数；如果不能通过new操作符调用，那和普通函数也没什么区别。
+
+    //当做构造函数
+    var person = new Person("hothunter", 23, "software engineer");
+    person.sayName();               //"hothutner"
+    
+    //作为普通函数
+    Person("hothunter", 23, "fucker");          //添加到window
+    window.sayName();           //"hothunter"
+    
+    //在另一个对象的作用域中调用
+    var o = new Object();
+    Person.call(o, "Hothunter", 23, "fucker");
+    o.sayName();            //"hothunter"
+
+构造函数的问题:
+每个方法都要在每个实例上重新创建一遍。
+函数时对象因此每定义一个函数，也就是实例化了一个对象。
+
+    function Person(name, age, job){
+        this.name = name;
+        this.age = age;
+        this.job = job;
+        this.sayName = new Function("alert(this.name)");    
+        //与声明函数在逻辑上等价
+    }
+    
+    alert(person1.sayName == person2.sayName);          //false
+    //以此方式创建函数，会导致不同的作用域链和标识符解析，但创建Function新实例的机制任然相同。因此不同实例上的听命函数时不相等的。
+
+    function Person(name, age, job){
+        this.name = name;
+        this.age = age;
+        this.job = job;
+        this.sayName = sayName;
+    }
+    function sayName(){
+        alert(this.name);
+    }
+    
+    var person1 = new Person("hothunter", 23, "fucker");
+    var person2 = new Person("lianhui", 9, "doubi");
+
+以上方法，由于sayName包含的是一个指向函数的指针，因此person1和person2共享了在全局作用域中定义的同一个sayName()函数。
+但问题是如果需要方法很多，就需要在全局环境创建多个全局函数，繁琐的同时会失去函数的封装性。
+
+原型模式(prototype)：
+
+prototype这个属性是一个指针，指向一个对象，而这个对象的用途是包含可以由特定类型的所有实例共享的属性和方法。prototype通过调用构造函数而创建的那个对象实例的原型对象。使用原型对象的好处是可以让所有对象实例共享它所包含的属性和方法。
+
+    function Person(){
+    }
+    
+    Person.prototype.name = "hothunter";
+    Person.prototype.age = 23;
+    Person.prototype.job = "fucker";
+    Person.prototype.sayName = function(){
+        alert(this.name);
+    };
+    
+    var person1 = new Person();
+    person1.sayName();          //"hothunter"
+    
+    var person2 = new Person();
+    person2.sayName();          //"hothunter"
+    
+    alert(person1.sayName == person2.sayName);          //ture
+
+理解原型对象：
+
+无论什么时候，只要创建了一个新函数，就会根据一组特定的规则为该函数创建一个prototype属相，这个属性指向函数的原型对象。当调用构造函数创建一个新实例后，该实例的内部将包含一个指针，指向构造函数的原型对象。即[[prototype]]。虽然无法直接访问，但各个浏览器都支持一个属性：__proto__。
+这个连接存在于实例与构造函数的原型对象之间，而不是存在于实例与构造函数之间。
+
+虽然所有实现中都无法访问[[prototype]]，但可以通过isPrototypeOf()方法确定对象之间是存在这种关系。
+
+    alert(Person.prototype.isPrototypeOf(person1));     //true
+    alert(Person.prototype.isPrototypeOf(person2));         //true
+
+Object.getPrototypeOf():返回[[prototype]]的值
+
+    alert(Object.getPrototypeOf(person1) == Person.prototype);      //true
+    alert(Object.getPrototypeOf(person2).name);     "hothunter"
+
+
+如果在实例中添加了一个属性，而该属性与实例原型中的一个属性同名，那就在实例中创建该属性，该属性将会屏蔽原型中的那个属性。
+
+    function Person(){}
+    
+    Person.prototype.name = "hothunter";
+    Person.prototype.age = 23;
+    Person.prototype.job = "asdf";
+    Person.prototype.sayName = function(){
+        alert(this.name);
+    };
+    
+    var person1 = new Person();
+    var person2 = new Person();
+    
+    person1.name = "lianhui";
+    alert(person1.name);        //"lianhui"
+    alert(person2.name);        //"hothunter"
+
+使用delete可以完全删除实例属性，从而让我们能够重新访问原型中的属性。
+
+    function Person(){}
+    
+    Person.prototype.name = "hothunter";
+    Person.prototype.age = 23;
+    Person.prototype.job = "asdf";
+    Person.prototype.sayName = function(){
+        alert(this.name);
+    };
+    
+    var person1 = new Person();
+    var person2 = new Person();
+    
+    person1.name = "lianhui";
+    alert(person1.name);        //"lianhui"     --  来自实例
+    alert(person2.name);        //"hothunter"       --  来自原型
+    
+    delete person1.name;
+    alert(person1.name);        //"hothunter"       --  来自原型
+
+hasOwnProperty():检测一个属性存在于实例中，还是原型中。只在给定属性存在于对象实例中时，才返回true
+
+    function Person(){}
+    
+    Person.prototype.name = "hothunter";
+    Person.prototype.age = 23;
+    Person.prototype.job = "asdf";
+    Person.prototype.sayName = function(){
+        alert(this.name);
+    };
+    
+    var person1 = new Person();
+    var person2 = new Person();
+    
+    alert(person1.hasOwnProperty("name"));      //false
+    
+    person1.name = "lianhui";           
+    alert(person1.name);        //"lianhui" --来自实例
+    alert(person1.hasOwnProperty("name"));      //true
+    
+    alert(person2.name);        //"hothunter"   --来自原型
+    alert(person1.hasOwnProperty("name"));      //false
+    
+    delete person1.name;
+    alert(person1.name);        //"hothunter"   --来自原型
+    alert(person1.hasOwnProperty("name"));      //false
+
+
+原型与in操作符
+
+两种使用in：单独使用、在for-i循环中使用。
+
+    function Person(){}
+    
+    Person.prototype.name = "hothunter";
+    Person.prototype.age = 23；
+    Person.prototype.job = "jsfourt";
+    Person.sayHello = function(){
+        alert(this.name);
+    };
+    
+    var person1 = new Person();
+    var person2 = new Person();
+    
+    alert(person1.hasOwnProperty("name"));          //false
+    alert("name" in person1);            //true
+    
+    person1.name = "lianhui";
+    alert(person1.name);            //"lianhui"--来自实例
+    alert(perosn1.hasOwnProperty("name"));          //true
+    alert("name" in person1);            //true
+    
+    alert(person2.name);            //"hothunter"--来自原型
+    alert(person2.hasOwnProperty("name"));          //false
+    alert("name" in person2);           //true
+    
+    delete person1.name;
+    alert(person1.name);            //"hothunter"--来自原型
+    alert(person1.hasOwnProperty("name"));          //false
+    alert("name" in person1);           //true
+
+无论属性存在于实例中还是存在于原型中，调用"name" in person都返回true。
+同时使用hasOwnProperty()就能确定属性存在于实例中还是原型中。
+
+    function hasPrototypeProperty(object, name){
+        return !object.hasOwnProperty(name) && (name in object);
+    }
+
+    function Person(){}
+    
+    Person.prototype.name = "hothunter";
+    Person.prototype.age = 23；
+    Person.prototype.job = "jsfourt";
+    Person.sayHello = function(){
+        alert(this.name);
+    };
+    
+    var person = new Person();
+    alert(hasPrototypeProperty(person, "name"))         //true
+    
+    person.name = "doubi";
+    alert(hasPrototypeProperty(person, "name"));        //false
+
+使用for-in循环时，返回的是所有嫩巩固通过对象访问、可枚举的（enumerated）属性，包括存在于实例、原型中的属性。屏蔽了原型中不可枚举的属性（[[Enumerable]]被标记为false）的实例也会被循坏。
+
+    var o ={
+        toString: function(){
+            return "My object";
+        }
+    };
+    for (var prop in o){
+        if (prop == "toString"){
+            alert("Found toString");
+        }
+    }
+
+要取得对象说有可枚举的实例属性，可以使用Object.keys()方法。接受一个对象作为参数，返回一个包含所有可枚举属性的字符串数组。
+
+    function Person(){}
+    
+    Person.prototype.name = "hothunter";
+    Person.prototype.age = 23；
+    Person.prototype.job = "jsfourt";
+    Person.sayHello = function(){
+        alert(this.name);
+    };
+    
+    var keys = Object.keys(Person.prototype);
+    alert(keys);                //"name,age,job,sayName"
+    
+    var p1 = new Person();
+    p1.name = "Rob";
+    p1.age = 31;
+    var p1keys = Object.keys(p1);
+    alert(p1keys);              //"name,age"
+
+
+如果要得到所有实例属性，无论是否可枚举，可以使用Object.getOwnPropertyNames()
+
+    var keys = Object.getOwnPropertyNames(Person.prototype);
+    alert(keys);            //"constructor,name,age,job,sayName"
+
+
+为了减少不必要的输入，也为了从视觉上更好的封装原型功能，更常见的做法是用一个包含所有属性和方法的对象字字面量来重写整个原型对象。
+
+    function Person(){}
+    
+    Person.prototype = {
+        name : "hothunter",
+        age : 23,
+        job : "student"
+        sayName : function(){
+            alert(this.name);
+        }
+    };
+
+但此时使用constructor已经无法确定对象的类型。本质上重写了默认的prototype对象，因此constructor属性也就变成了新对象的constructor(指向Object构造函数)
+
+    var friend = new Person();
+    
+    alert(friend instanceof Object);            //true
+    alert(friend instanceof Person);            //true
+    alert(friend.constructor == Person);        //false
+    alert(friend.constructor == Object);        //true
+
+如果constructor的值真的很重要，则可以：
+
+    function Person(){}
+    
+    Person.prototype = {
+        constructor : Person,
+        name : "hothunter",
+        age : 23,
+        job : "student"
+        sayName : function(){
+            alert(this.name);
+        }
+    };
+
+默认情况下constructor属性不可被枚举，可以使用Object.defineProperty();
+
+    function Person(){}
+    
+    Person.prototype = {
+        name : "hothunter",
+        age : 23,
+        job : "student"
+        sayName : function(){
+            alert(this.name);
+        }
+    };
+    //重设构造函数，只适用于ECMAScript5兼容的浏览器
+    Object.defineProperty(Person.prototype, "constructor", {
+        enumerable : false,
+        value : Person
+        });
+
+原型的动态性：由于在原型中查找值得过程是一次搜索，因此对原型对象所做的任何修改都能够立即从实例反应（即使是先创建了实例后修改原型也如此）
+
+    var friend = new Person();
+    
+    Person.prototype.sayHi = function(){
+        alert("Hi");
+    };
+    friend.sayHi();         //"Hi"
+
+可以随时为原型添加属性和方法，并且修改能够立即在所有对象实例中反映出来，但如果是重写整个原型对象，情况就会不同。
+实例中的指针仅指向原型，而不指向构造函数
+
+    function Person(){}
+    
+    var friend = new Person();
+    
+    Person.prototype = {
+        constructor: Person,
+        name : "hothunter",
+        age : 23,
+        job : "study",
+        sayName : function(){
+            alert(this.name);
+        }
+    };
+    
+    friend.sayName();           //error
+
+上面例子首先创建Person实例，然后又重写了原型。在调用friend.sayName()发生错误，因为friend指向的二元性中不包含以改名字命名的属性
+
+
+所有原生引用类型（Object/Array/String等）都在其构造函数的原型上定义了方法。
+
+    alert(typeof Array.prototype.sort);             //"function"
+    alert(typeof String.prototype.substring);       //"function"
+
+通过原生对象的原型，可以取得所有默认方法的引用，而且也可以自定义新方法。可以像修改自定义对象的原型一样修改原对象的原型 ，因此可以随时添加方法。
+
+    String.prototype.startsWith = function (text) {
+        return this.indexOf(text) == 0;
+    };
+    
+    var msg = "Hello world";
+    alert(msg.startsWith("Hello"));     //true
+
+当前环境中所有的字符串都可以调用startWith()方法。
+
+原型对象的问题：
+首先，省略了为构造函数传递初始化参数这一环节，结果所有实例会默认情况下都将取得相同的属性值。虽然会在某种程度上带来一些不方便，但原型模式的最大问题是由其共享的本性所导致的。
+原型中所有属性被很多实例共享，这种共享对于函数非常合适。通过在实例上添加一个同名属性，可以隐藏原型中对应属性。然而对于包含引用类型值来说问题就突出了
+
+    function Person(){}
+    
+    Person.prototype = {
+        constructor : Person,
+        name : "hothunter",
+        age : 23
+        friends : ["lianhui", "doubi"],
+        sayName : function(){
+            alert(this.name);
+        }
+    };
+    
+    var person1 = new Person();
+    var person2 = new Person();
+    
+    person1.friends.push("Van");
+    
+    alert(person1.friends);         //"lianhui,doubi,Van"
+    alert(person2.friends);         //"lianhui,doubi,Van"
+    alert(person1.friends === person2.friends);     //true
+
+实例一般都要有属于自己的全部属性。这个问题正是很少看到有人单独使用原型模式的原因。
+
+
+组合使用构造函数模式和原型模式：
+
+构造函数模式用于定义实例属性，而原型模式用于定义方法和共享的属性。每个实例都会有自己的一份实例属性的副本，同时又共享对方法的引用。同时还支持向构造函数产地参数。
+
+    function Person(name, age, job){
+        this.name = name;
+        this.age = age;
+        this.job = job;
+        thi.friends = ["fri1", fri2];
+    }
+    
+    Person.prototype = {
+        constructor : Person,
+        sayName : function(){
+            alert(this.name);
+        }
+    }
+    
+    var person1 = new Person("hothunter", 23, "student");
+    var person2 = new Person("lianhui", 9, "doubi");
+    
+    person1.friends.push("fri3");
+    alert(person1.friends);         //"fri1,fri2,fri3"
+    alert(person2,firends);         //"fri1,fri2"
+    alert(person1,firends === person2.friends);     //false
+    alert(person1.sayName === person2.sayName);     //true
+
+这种够赞函数与原型混成的模式，是目前默认的定义引用类型的模式。
+
+
+动态原型模式：
+
+把所有信息都封装在构造函数中，而通过在构造函数中初始化原型，又保持了同事使用构造函数和原型的有点。
+通过检查某个应该存在的方法是否有效，来决定是否需要初始化原型。
+
+    function Person(name, age, job){
+        //属性
+        this.name = name;
+        this.age = age;
+        this.job = job;
+        //方法
+        if (typeof this.sayName != "function"){
+            Person.prototype.sayName = function(){
+                alert(this.name);
+            };
+        }
+    }
+    
+    var friend = new Person("hothunter", 23, "study");
+    friend.sayName();
+
+这段代码只会在初次调用构造函数式才会执行。伺候原型已经完成初始化，不需要再做什么修改。但这里对原型所做的修改，能够立即在所有实例中得到反映。if语句煎炒的可以是初始化之后应该存在的任何属性或方法--不必用一大堆if语句检查每个属性和每个方法；只需要一个即可。对于采用这种模式创建的对象，还可以使用instanceof判断。
+
+
+计生构造函数模式：
+寄生（parasitic）构造模式的基本思想是创建一个函数，作用仅仅是封装创建对象的代码，然后再返回新创建的对象。
+
+    function Person(){
+        var o = new Object();
+        o.name = name;
+        o.age = age;
+        o.job = job;
+        o.sayName = function(){
+            alert(this.name);
+        };
+        return o;
+    }
+    
+    var friend = new Person("hothunter", 23, "study");
+    friend.sayName();       //"hothunter"
+
+这个模式可以在特殊的额情况下用来为对象创建构造函数。假设常见一个具有额外方法的特殊数组。由于不能直接修改Array，因此：
+
+    function SpecialArray(){
+        //创建数组
+        var values = new Array();
+        //添加值
+        value.push.apply(values, arguments);
+        //添加方法
+        value.toPipedString = function(){
+            return this.join("|");
+        };
+        //返回数组
+        return values;
+    }
+    
+    var colors = new SpecialArray("red", "blue", "green");
+    alert(colors.toPipedString());      //"red|blue|green"
+
+需要说明：首先，返回的对象与构造函数或者与构造函数的原型属性之间没有关系；也就是说构造函数返回的对象与在构造函数外部创建的对象没有不同。不能依赖instanceof操作符来确定对象类型。
+
+
+稳妥构造函数模式：
+
+稳妥对象（durable objects）：指没有公共属性，而且其方法也不引用this对象。同时也不使用new
+
+    function Person(name, age, job){
+        //创建要返回的对象
+        var o = new Object();
+        //可以再这里定义私有变量和函数
+        //添加方法
+        o.sayName = function(){
+            alert(name);
+        };
+        //返回对象
+        return o;
+    }
+    
+    var friend = new Person("hothunter", 23, "study");
+    friend.sayName();               //"hothunter"
+
+除了调用sayName方法，么有别的方式可以访问数据成员。即使有其他代码会给这个而对象添加方法或者数据成员，蛋液不可能有别的而方法啊访问传入到构造函数中的原始数据
+
+
+#### 继承
+
+ECMAScript只支持实现继承，实现继承主要是依靠原型链实现。
+
+原型链：
+
+利用原型让一个引用类型继承另一个引用类型的属性和方法。
+每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数的指针，而实例都包含一个指向原型对象的内部指针。使原型对象等于另一个类型的实例，显然此时的原型对象见更包含一个纸箱另一个原型的指针，相应的，另一个原型中也包含着一个指向另一个构造函数的指针。假如另一个原型又是另一个类型的实例，上述关系依然成立，构成了实例与原型的链条。。
+
+    function SuperType(){
+        this.property = true;
+    }
+    
+    SuperType.prototype.getSuperValue = function(){
+        return this.property;
+    }
+    
+    function SubType(){
+        this.subproperty = false;
+    }
+    
+    //继承了SuperType
+    SubType.prototype = new SuperType();
+    
+    SubType.prototype.getSubValue = function(){
+        return this.subproperty;
+    };
+    
+    var instance = new SubType();
+    alert(instance.getSuperValue());            //true
+
+原来存在于SuperType是所有属性和方法，现在也存在于SubType.prototype中。
+
+所有函数的默认原型都是Object的实例，因此默认原型都会包含一个内部指针，指向Object.prototype。也整死所有自定义类型都会继承toString()、vlaueOf()等默认方法的根本原因。
+
+一句话，SubType继承了SuperType，而SuperType继承了Object。当调用instance.toString()时，实际上调用的是保存在Object.prototype中的那个方法。
+
+确定原型和实例的关系：
+两种方式确实能够原型和实例之间的关系。
+第一种使用instanceof，只要用这个操作符来测试实例与原型链中出现过的构造函数，结果就会返回true
+
+    alert(instance instanceof Object);          //true
+    alert(instance instanceof SuperType);       //true
+    alert(instance instanceof SubType);         //true
+
+第二种使用isPrototypeOf()方法，与上面原理相同
+
+    alert(Object.prototype.isPrototypeOf(instance));            //true
+    alert(SuperType.prototype.isPrototypeOf(instance));         //true
+    alert(SubType.prototype.isPrototypeOf(instance));           //true
+
+
+谨慎定义方法：
+子类型有时候需要覆盖超类型中的某个方法，或者需要添加超类型中不存在的某个方法。但不管怎样，给原型添加方法的代码一定要放在替换原型的语句之后。
+重写后的方法会屏蔽原来的方法。
+
+    function SuperType(){
+        this.property = true;
+    }
+    
+    SuperType.prototype.getSuperValue = function(){
+        return this.property;
+    }
+    
+    function SubType(){
+        this.subproperty = false;
+    }
+    
+    //继承了SuperType
+    SubType.prototype = new SuperType();
+    
+    //添加了新方法
+    SubType.prototype.getSubValue = function(){
+        return this.subproperty;
+    };
+    
+    //重写超类型中的方法
+    SubType.prototype.getSuperValue = function(){
+        return false;
+    };
+    
+    var instance = new SubType();
+    alert(instance.getSuperValue());            //false
+
+通过原型链实现继承时，不能使用对象字面量创建原型方法。这样做就会重写原型链。
+
+    function SuperType(){
+        this.property = true;
+    }
+    
+    SuperType.prototype.getSuperValue = function(){
+        return this.property;
+    }
+    
+    function SubType(){
+        this.subproperty = false;
+    }
+    
+    //继承了SuperType
+    SubType.prototype = new SuperType();
+    
+    //使用字面量添加新方法，会导致上一行代码无效
+    SubType.prototype = {
+        getSubValue : function (){
+            return this.subproperty;
+        },
+        someOtherMethod : function(){
+            return false;
+        }
+    };
+    
+    var instance = new SubType();
+    alert(instance.getSuperValue());            //error!
+
+原型链的问题：
+在通过原型来实现继承时，原型实际上会变成另一个类型的实例。。原先的实例属性也就变成了现在的原型属性了。
+
+    function SuperType(){
+        this.colors = ["red", "blue", "green"];
+    }
+    
+    function SubType(){
+    }
+    
+    //继承了SuperType
+    SubType.prototype = new SuperType();
+    
+    var instance1 = new SubType();
+    instance1.colors.push("black");
+    alert(instance1.colors);            //"red,blue,green,black"
+    
+    var instance2 = new SubType();
+    alert(instance2.colors);            //"red,blue,green,black"
+
+第二个问题：在创建子类型的时候，不能先沟槽类型的构造函数中床底参数。实际上应该是没有办法在不影响所有对象实例的情况下，给超类型的构造函数传递参数。
+
+实践中很少会使用原型链。
+
+
+借用构造函数：
+也叫做伪造对象或经典继承。在子类型构造函数的内部调用超类型构造函数。因为函数时在特定环境中执行代码的对象，因此通过apply()/call()可以在新的创建的对象上执行构造函数。
+
+    function SuperType(){
+        this.colors = ["red", "blue", "green"];
+    }
+    
+    function SubType(){
+        //继承了SuperType
+        SuperType.call(this);
+    }
+    
+    var instance1 = new SubType();
+    instance1.colors.push("black");
+    alert(instance1.colors);            //"red,blue,green,black"
+    
+    var instance1 = new SubType();
+    alert(instance2.colors);            //"red,blue,green"
+
+
+相对于原型链，急用构造函数有一个喊打的有事，可以再子类型构造函数中项超类型构造函数传递参数。
+
+    function SuperTYpe(name){
+        this.name = name;
+    }
+    
+    function SubType(){
+        //继承了SuperType，同时传递参数
+        SuperType.call(this,"hothunter");
+    
+        //实例属性
+        this.age = 29;
+    }
+    
+    var instance = new SubType();
+    alert(instance.name);           //"hothunter"
+    alert(instance.age);            //29
+
+但是仅仅使用构造函数模式，函数将无法服用，而且在超类型的原型中定义的方法，对子类型而言也是不可见的，结果是所有的类型都只能使用构造函数模式
+
+
+组合继承：
+将原型链和借用构造函数的技术组合，使用原型链实现对原型属性和方法的竭诚，通过急用构造函数来实现对实例属性的继承。
+
+    function SuperType(name){
+        this.name = name;
+        this.colors = ["red", "blue", "green"];
+    }
+    
+    SuperType.prototype.sayName = function() {
+        alert(this.name);
+    }
+    
+    function SubType(name, age){
+        //继承属性
+        SupertType.call(this, name);                       ///此处调用
+        this.age = age;
+    }
+    
+    //继承方法
+    SubType.prototype = new SuperType();                   ///此处调用
+    SubType.prototype.constructor = SubType;
+    SubType.prototype.sayAge = function(){
+        alert(this.age);
+    };
+    
+    var instance1 = new SubType("hothunter", 23);
+    instance1.colors.push("balck");
+    alert(instance1.colors);            //"red,blue,green,black"
+    instance1.sayName();                //"hothunter"
+    instance1.sayAge();                 //23
+    
+    var instance2 = new SubType("doubi", 9);
+    alert(instance2.colors);            //"red,blue,green,black"
+    instance2.sayName();                //"doubi"
+    instance2.sayAge();                 //9
+
+组合式继承最大不足是无论什么情况下，都会调用两次超类型构造函数：一次是在创建子类型原型的时候，另一次是在子类型构造函数内部。
+
+
+原型式继承：
+
+    function object(o){
+        function F(){}
+        F.prototype = o;
+        return new F();
+    }
+
+从本质讲，object()对传入的对象执行了一次浅复制。
+
+    var person = {
+        name : "hothunter",
+        friends : ["fri1", "fri2", "fri3"]
+    };
+    
+    var anotherPerson = object(person);
+    anotherPerson.name = "doubi";
+    anotherPerson.friends.push("fri4");
+    
+    var yetAnotherPerson = object(person);
+    yetAnotherPerson.name = "naocan";
+    yetAnotherPerson.friends.push("fri5");
+    
+    alert(person.friends);          //"fri1,fri2,fri3,fri4,fri5"
+
+ECMAScript5新增Object.create()规范化原型式继承。接收两个参数：一个用作新对象原型的对象和（可选的）一个味新兑现规定以额外属性的对象，在传入一个参数的情况下，Object.create()与Object()相同。
+
+    var person = {
+        name : "hothunter",
+        friends : ["fri1", "fri2", "fri3"]
+    };
+    
+    var anotherPerson = object.create(person);
+    anotherPerson.name = "doubi";
+    anotherPerson.friends.push("fri4");
+    
+    var yetAnotherPerson = object.create(person);
+    yetAnotherPerson.name = "naocan";
+    yetAnotherPerson.friends.push("fri5");
+    
+    alert(person.friends);          //"fri1,fri2,fri3,fri4,fri5"
+
+    var person = {
+        name : "hothunter",
+        friends : ["fri1", "fri2", "fri3"]
+    };
+    
+    var anotherPerson = Object.create(person, {
+        name : {
+            value : "doubi"
+        }
+        });
+    
+    alert(anotherPerson.name);          //"doubi"
+
+只想让一个对象与另一个对象保持类似的情况下，原型式继承是完全可以胜任的。但包含应用类型值的属性始终都会共享相应的值，就像使用原型模式一样。
+
+
+寄生式继承：
+
+创建一个仅用于封装继承过程的函数，该函数在内部已某种方式来增强对象，最后再返回对象。
+
+    function createAnother(original){
+        var clone = Object(original);           //通过调用函数创建一个新对象
+        clone.sayHi = function(){               //以某种方式增强这个对象
+            alert("hi");
+        };
+        return clone;                           //返回这个对象
+    }
+
+可以这样使用：
+
+    var person = {
+        name : "hothunter",
+        friends : ["fri1", "fri2", "fri3"]
+    };
+    
+    var anotherPerson = createAnother(person);
+    anotherPerson.sayHi();          //"hi"
+
+在主要考虑对象而不是自定义类型和构造函数的任何情况下，寄生式继承也可以，object()函数不是必须的，任何能够返回新对象的函数都适用于此模式。
+
+
+寄生组合式继承：
+
+通过借用构造函数来继承属性，通过原型链的混成形式来继承方法。可以不必为了制定子类型的原型而调用超类型的构造函数。本质上，就是一哟啊那个寄生式继承来继承超类型的原型，然后再将结果指定给子类型的原型：
+
+    function inheritPrototype(subType, superType){
+        var prototype = Object(superType, subType);     //创建对象
+        prototype.constructor = subType;                //增强对象
+        subType.prototype = prototype;                  //指定对象
+    }
+
+第一步创建超类型原型的一个副本。第二部为创建的对象复制给子类型的原型。
+
+    function SuperType(name){
+        this.name = name;
+        this.colors = ["red", "blue", "green"];
+    }
+    
+    SuperType.prototype.sayName = function(){
+        alert(this.name);
+    }
+    
+    function SubType(name, age){
+        SuperType.call(this, name);
+        this.age = age;
+    }
+    
+    inheritPrototype(SubType, SuperType);
+    
+    SubType.prototype.sayAge = function{
+        alert(this.age);
+    }
+
+该例子高效率体现在，只调用一次SuperType构造函数，并且因此比秒了在SubType.prototype上面创建不必要的、多余的属性。与此同时，原型链还能保持不变；因此，还能够正常使用instanceof和isPrototypeOf()方法。普遍认为继承组合继承时应用类型最理想的继承方式。
+
+
+---
+
+
+### 函数表达式
+
+定义函数的两种方式：函数声明，函数表达式。
+函数声明：
+
+    function functionName(arg0, arg1, arg2){
+        //函数体
+    }
+
+关于函数的一个重要特征：函数声明提升：执行代码前会先读取函数声明。
+
+    sayHi();
+    function sayHi(){
+        alert("hi");
+    }
+
+
+函数表达式：
+
+    var functionName = function(arg0, arg1, arg2){
+        //函数体
+    };
+
+看起来像常规的变量赋值语句，即常见一个函数并将它复制给变量functionName。这种情况下创建的函数叫匿名函数（达姆拉函数），function关键字后面没有标识符。
+在使用前必须先赋值。一下代码是错误的：
+
+    sayHi();
+    var sayHi = function(){
+        alert("hi");
+    }
+
+另一个区别：
+
+    //这么做是错误的：
+    if(condition==1){
+        function sayHi(){
+            alert("hi");
+        }
+    }else{
+        function sayHi(){
+            alert("Yo!");
+        }
+    }
+
+    //可以这么做：
+    var sayHi;
+    
+    if(condition){
+        sayHi = function(){
+            alert("hi");
+        }
+    }else{
+        sayHi = function(){
+            alert("yo");
+        }
+    }
+
+能够创建函数再赋值给变量，也就能够把函数作为其他函数的值返回
+
+    function createComparisonFunction(propertyName) {
+        return function(object1, object2){
+            var value1 = object1[propertyName];
+            var value2 = object2[propertyName];
+            if (value1 < value2){
+                return -1;
+            } else if (value1 > value2){
+                return 1;
+            } else {
+                return 0;
+            }
+        };
+    }
+
+
+#### 递归
+
+递归函数是在一个函数通过名字调用自身的情况下构成的
+
+    function factorial(num){
+        if(num <= 1){
+            return 1;
+        } else {
+            return num * factorial(num - 1);
+        }
+    }
+
+注意函数名的耦合问题：
+
+    var anotherFactorial = factorial;
+    factorial = null;
+    alert(anotherFactorial(4));         //出错
+
+使用arguments.callee指向正在执行的函数的指针，实现递归：
+
+    function factorial(num){
+        if (num <= 1){
+            return 1;
+        }else {
+            return num * arguments.callee(num - 1);
+        }
+    }
+
+严格模式下无法访问arguments.callee，达到相同目的需要使用命名函数表达式：
+
+    var factorial = (function F(num){
+        if (num <= 1) {
+            return 1;
+        }else {
+            return num * F(num - 1);
+        }
+    });
+
+
+#### 闭包
+
+闭包是指有权访问另一个函数作用域中的变量的函数。创建闭包的常见方式，就是在一个函数内部创建另一个函数。
+
+    function createComparisonFunction(propertyName) {
+        return function(object1, object2){
+            var value1 = object1[propertyName];
+            var value2 = object2[propertyName];
+            if (value1 < value2){
+                return -1;
+            } else if (value1 > value2){
+                return 1;
+            } else {
+                return 0;
+            }
+        };
+    }
+
+当某个函数被调用时，会创建一个执行环境（execution context）及相应的作用域链。然后使用argumengts和其他命名参数的值来初始化函数的活动对象（activation object）。但在作用域链中，外部函数的而活动对象始终处在第二位，外部函数的外部函数的活动对象出于第三位，···直至作为作用域链重点的全局执行环境
+在函数执行过程中，为读取和写入变量的值，就需要在作用域链中查找变量。
+
+    function compare(value1, value2){
+        if (value1 < value2){
+            return -1;
+        }
+        else if (value1 > value2){
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    
+    var result = compare(5, 10);
+
+后台的每个执行环境都有一个表示变量的对象--变量对象。全局环境的变量对象始终存在，而像compare()函数这样的局部环境的变量对象，则值在函数执行的过程中存在。创建compare()函数时，会创建一个预先包含全局变量对象的作用域链，这个作用域链被保存在内部的[[Scope]]属性中。当调用compare()时，会为函数常见一个执行环境，然后通过赋值函数的[[Scope]]属性中的对象构建起执行环境的作用域链。此后，又有一个活动对象（再次作为变量对象使用）被创建并被推入执行环境作用域链的前端。
+作用域链本质上是一个纸箱变量对象的指针列表，它只引用但不实际包含变量对象。
+
+无论什么时候在函数中访问一个变量时，就会从作用域链中搜索具有相应名字的变量。一般来说，当函数执行完毕后，局部活动对象就会被销毁。内存中仅保存全局作用域（全局执行环境的变量对象）。
+
+
+闭包与变量：
+
+作用域链的配置机制的副作用：闭包只能取得包含半数中任何变量的最后一个值。
+
+    funciton createFunctions(){
+        var result = new Array();
+        for (var i=0; i < 10; i++){
+            result[i]  = function(){
+                return i;
+            };
+        }
+        return result
+    }
+
+当createFunctions()函数返回后，变量i的值是10，此时每个函数都引用保存变量i的同一个变量对象，所以在每个函数内部i的值都是10。
+可以通过创建两一个匿名函数强制让闭包的行为符合预期：
+
+    function createFunctions(){
+        var result = new Array();
+        for (var i=0; i < 10; i++){
+            result[i] = function(num){
+                return function(){
+                    return num;
+                };
+            }(i);
+        }
+        return result;
+    }
+
+
+关于this：
+匿名函数的执行环境具有全局性，因此其this对象通常指向window。
+
+    var name = "the window";
+    
+    var object = {
+        name : "My Object",
+        getNameFunc : function(){
+            return function(){
+                return this.name;
+            };
+        }
+    };
+    alert(object.getNameFunc()());          //"the window"  ---     非严格模式
+
+由于getNameFunc()返回一个函数，因此调用getNameFunc()()就会立即调用它返回的函数。
+内部函数在搜索这两个变量时，只会搜索到其活动对象为止，因此永远不可能直接访问外部函数中的变量。
+不过可以这样：
+
+    var name = "the window";
+    
+    var object = {
+        name : "My object",
+        getNameFunc : function(){
+            var that = this;
+            return function(){
+                return that.name;
+            };
+        }
+    };
+    alert(object.getNameFunc()());          //"My Object"
+
+this的值意外改变的情况：
+
+    var name = "the window";
+    var object = {
+        name : "my object",
+        getName : function(){
+            return this.name;
+        }
+    };
+    
+    object.getName();           //"my object"
+    (object.getName)();         //"my object"
+    (object.getName = object.getName)();            //"the window"
+
+    
+内存泄漏：
+
+如果闭包的作用域链中保存着一个HTML元素，那么就意味着该元素将无法被销毁。
+
+    function assignHandler(){
+        var element = document.geElementById("someElement");
+        element.onclick = function(){
+            alert(element.id);
+        };
+    }
+
+有匿名函数保存了一个对assignHandler()的活动对象的引用，因此就会导致无法减少element的引用数。只要牛冥函数存在，element的引用数就至少也是1，因此它所占用的内存就永远不会被回收。
+可以这样：
+
+    function assignHandler(){
+        var element = document.getElementById("someElement");
+        var id = element.id;
+        element.onclick = function(){
+            alert(id);
+        };
+        element = null;
+    }
+
+
+#### 模仿块级作用域
+
+js从不提示是否多次声明了同一个变量。是会对后续的声明视而不见（不过会执行变量初始化）。匿名函数可以同来模仿块级作用域并避免这个问题。
+
+    (function(){
+        //这里是块级作用域
+    })();
+
+以上代码定义并立即调用了一个匿名函数。将函数声明包含在一对圆括号中，表示它实际山格式一个函数表达式。紧随其后的一对圆括号会立即调用这个函数。
+函数声明后不可加()，但是函数表达式可以。将函数声明转化函数表达式，再加上圆括号即可。
+
+    function outputNumbers(count){
+        (function(){
+            for (var i=0; i < count; i++){
+                alert(i);
+            }
+        })();
+        alert(i);
+    }
