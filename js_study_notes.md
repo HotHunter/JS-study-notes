@@ -847,7 +847,7 @@ localPerson在函数执行环境结束时自动被回收，但globalPerson则需
         "age"   :   23,
         5       :   true
     };
-
+   
     var person = {};        ==>     var person = new Object();
 
     function displayInfo(args){
@@ -3484,3 +3484,1238 @@ js从不提示是否多次声明了同一个变量。是会对后续的声明视
         })();
         alert(i);
     }
+
+在匿名函数中定义的任何变量，都会在执行结束时被销毁
+
+    function outputNumbers(count){
+        (function () {
+            for (var i=0; i < count; i++){
+                alert(i);
+            }
+        })();
+        alert(i);           //此处出错
+    }
+
+这种技术经常在全局作用域中被用在函数外部，从而限制向全局作用域中添加过多的变量核函数。一般来说，都应该尽量少向全局作用域中添加变量和函数。
+在一个由多人开发的大型项目中，过多的全局变量和函数很容易导致命名冲突。通过创建私有作用域，每个开发既可以使用自己的变量，又不必担心担心搞乱全局作用域。
+
+    (function(){
+        var now = new Date();
+        if(now.getMonth() == 0 && now.getDate() == 1){
+            alert("Happy new year!");
+        }
+    })();
+
+
+#### 私有变量
+
+严格来讲，js中没有私有成员的概念，所有的对象属性都是公有的。
+但在任何函数中定义的变量，都可以被认为是私有变量，不能再函数的外部访问这些变量。私有变量包括函数的参数、局部变量和在函数内部定义的其他函数。
+
+    function add(num1, num2){
+        var sum = num1 + num2;
+        return sum;
+    }
+
+在此函数内部创建一个闭包，闭包通过自己的作用域链也可以访问这些变量。就可以创建用于访问私有变量的公有方法：
+吧有权访问私有变量和私有函数的公有方法称为特权方法（privileged method）。
+两种方式，第一张在构造函数中定义特权方法：
+
+    function Myobject(){
+        //私有变量和私有函数
+        var privateVariable = 10;
+        function privateFunction(){
+            return false;
+        }
+    
+        //特权方法
+        this.publicMethod = function (){
+            privateVariable++;
+            return privateFunction();
+        };
+    }
+
+创建MyObject的实例后，吃了使用publicMethod()这个途径外，没有任何办法可以直接访问privateVariable和privateFunction()
+
+利用私有和特权成员，可以隐藏不应被直接修改的数据。
+
+    function Person(name){
+        this.getName = function(){
+            return name;
+        };
+        this.setName = function(value){
+            name = value;
+        };
+    }
+    
+    var person = new Person("hothunter");
+    alert(person.getName());            //"hothunter"
+    person.setName("doubi");
+    alert(person.getName());            //"doubi"
+
+
+静态私有变量：
+
+通过在私有作用域中定义私有变量或函数，同样也可以创建特权方法：
+
+    (function(){
+        //私有变量和私有函数
+        var privateVariable = 10;
+        function privateFunction(){
+            return false;
+        }
+        //构造函数
+        MyObject = function(){
+        };
+        //公有/特权方法
+        MyObject.prototype.publicMethod = function(){
+            privateVariable++;
+            return privateFunction();
+        };
+    })();
+
+初始化未经声明的变量，总是会创建一个全局变量。因此MyObject就成了全局变量，能够在私有作用域中被访问到。
+这个模式与在构造函数中定义特权方法的主要区别，就在于私有变量和函数时由实例共享的。有特权方法是在原型上定义的，因此所有实力都是用同一个函数。而这个特权方法作为一个闭包，总是保存着对包含作用域的引用。
+
+    (function(){
+        var name = "";
+        Person = function(value){
+            name = value;
+        };
+        Person.prototype.getName = function(){
+            return name;
+        };
+        Person.prototype.setName = function(value){
+            name = value;
+        };
+    })();
+    
+    var person1 = new Person("hothunter");
+    alert(person1.getName());           //"hothunter"
+    person1.setName("doubi");
+    alert(person1.getName());           //"doubi"
+    
+    var person2 = new Person("lianhui");
+    alert(person1.getName());           //"lianhui"
+    alert(person2.getName());           //"lianhui"
+
+这种方式创建静态私有变量会因为使用原型而增加代码复用，但每个实例都没有自己的私有变量。
+
+模块模式（module pattern）：
+为单例创建私有变量和特权方法。单例（singleton）指的就是只有一个实例的对象。
+
+    var singleton = {
+        name : value,
+        method : function(){
+            //这里是方法的代码
+        }
+    };
+
+模块模式通过为单例添加私有变量和特权方法能够使其得到增强：
+
+    var singleton = function(){
+        //私有变量和私有函数
+        var privateVariable = 10;
+        function privateFunction(){
+            return false;
+        }
+        //特权、公有方法和属性
+        return {
+            publicProperty : true,
+            publicMethod : function(){
+                privateVariable++;
+                return privateFunction();
+            }
+        };
+    }();
+
+返回的对象有钱访问私有变量和函数。这个对象字面量定义的是单例的公共接口。这种模式在需要对单例进行某些初始化，同时又需要维护其私有变量时有用。
+
+    var application = function(){
+        //私有变量和函数
+        var components = new Array();
+        //初始化
+        components.push(new BaseComponent());
+        //公有
+        return {
+            getComponentCount : function(){
+                return components.length;
+            }
+            registerComponent : function(component){
+                if (typeof component == "object"){
+                    components.push(component);
+                }
+            }
+        };
+    }();
+
+如果必须创建一个对象并以某些数据对其进行初始化，同事还要公开一些能够访问这些私有数据的方法，那么就可以使用模块模式。这种模式创建的每个单例都是Object的实例，因为最终要通过一个对象字面量来表达。
+
+增强的模块模式：
+
+进一步增强：在返回对象之前加入对其增强的代码。适用于那些单例必须是某种类型的实例，同事还必须添加某些属性和方法对其加以增强的情况。
+
+    var singleton = function(){
+        //私有变量和私有函数
+        var privateVariable = 10;
+        function privateFunction(){
+            return false;
+        }
+        //创建对象
+        var object = new CustomType();
+        //添加特权、公有属性和方法
+        object.publicProperty = true;
+        object.publicMethod = function(){
+            privateVariable++;
+            return privateFunction();
+        };
+        //返回这个对象
+        return object;
+    }();
+
+对于上面application的例子，如果对象必须是BaseComponent：
+
+    var application = function(){
+        //私有变量和函数
+        var components = new Array();
+        //初始化
+        components.push(new BaseComponent());
+        //创建application的一个局部副本
+        var app = new BaseComponent();
+        //公共接口
+        app.getComponentCoune = function(){
+            return conponents.length;
+        }
+        app.registerComponent = function(){
+            if(typeof component == "object"){
+                components.push(component);
+            }
+        };
+        //返回这个副本
+        return app;
+    }();
+
+
+----
+
+### BOM
+
+BOM(浏览器对象模型)是Web中使用JavaScript的核心。
+
+#### window对象
+
+BOM的核心对象是window，表示浏览器的一个实例。既是通过JavaScript访问浏览器窗口的一个接口，又是ECMAScript规定的Global对象。在网页中定义的任何一个对象、变量和函数，都以window作为其golbal对象，因此有权访问parseInt()等方法。
+
+全局作用域：
+在全局作用域中声明的变量、函数都会贬称gwindow对象的属性和方法
+
+    var age = 23;
+    function sayAge(){
+        alert(this.age);
+    }
+    alert(window.age);          //23
+    sayAge();                   //23
+    window.sayAge();            //23
+
+定义全局变量与在window对象上直接定义属性有差别：全局变量不嫩沟通过delete操作符删除，而直接在window对象上定义的属性可以。
+
+    var age = 23;
+    window.color = "red";
+    
+    //在IE<9出错，其他所有浏览器中返回false
+    delete window.age;
+    
+    //在IE<9出错，其他所有连蓝旗返回true
+    delete window.color;     //returns true
+    
+    alert(window.age);          //29
+    alert(window.color);        //undefined
+
+使用var添加的window对象的[[Configurable]]属性会被设置为false，这样定义的属性不可通过delete操作符删除。
+
+尝试访问未声明的变量会抛出错误，但是通过查询window对象，可以知道某个可能为声明的变量是否存在。
+
+    //这里抛出错误，因为oldValue未定义
+    var newValue = oldValue;
+    
+    //这里不会，这是一次属性查询
+    //newValue的值是undefined
+    var newValue = window.oldValue;
+
+
+窗口关系及框架：
+
+如果页面中包含框架，则每个框架都拥有自己的window对象，保存在frames集合中。在frames集合中，可以通过数值索引（从0开始，从左至右，从上到下）或者框架名称来访问相应的window对象，每个window对象都有一个name属性，包含框架的名称
+
+    <html>
+        <head>
+            <title>Frameset Example</title>
+        </head>
+        <frameset rows="160,*">
+            <frame src="frame.htm" name="legrFram">
+            <frameset cols="50%,50%">
+                <frame sre="anotherframe.htm" name="leftFrame">
+                <frame sre="yetanotherfame.htm" name="rightFrame">
+            </frameset>
+        </frameset>
+    </html>
+
+可以通过window.frames[0]或者window.frames["topFrame"]来引用上方的框架。
+不过最好使用top.frames[0]。
+top对象始终指向最高（最外）曾框架。也就是浏览器窗口。可以确保在一个框架中正确的访问另一个框架。对于在一个框架中编写的额任何代码来说，其中的window对象指向的都是那个框架的特定实例，而非最高层的框架。
+
+与top相对的另一个window对象是parent（父）。始终指向当前框架的直接尚岑该框架。在某写情况parent等于top。没有框架情况下，parent一定等于top（同时都等于window）。
+
+注意，除非最高层窗口是通过window.open()打开的，否则其window对象的name属性不会包含任何值。
+
+所有这些对象都是window的属性，可以通过window.parent/window.top等形式来访问，同时也意味着可以将不同层次的window对象连缀起来，例如
+    
+    window.parent.parent.farmes[0];
+
+
+窗口位置
+
+用来确定和修改window对象位置的属性和方法有很多。screenLeft/screenTop，分别用于表示窗口相对于屏幕左边和上边的位置：
+
+    var leftPos = (typeof window.screenLeft == "number") ?
+                    window.screenLeft : window.screenX;
+    var TopPos = (typeof window.screenLeft == "number") ?
+                    window.screenTop : window.screenY;
+
+moveTo()接收新位置的x和y的坐标值，
+moveBy()接收的是在水平和垂直方向上移动的像素数。
+通常这两个方法都是被浏览器禁用的。
+    
+    //将窗口移动到屏幕左上角
+    window.moveTo(0, 0);
+    
+    //将窗口向下移动100像素
+    window.moveBy(0, 100);
+    
+    //将窗口移动到(20, 300);
+    window.moveTo(20, 300);
+    
+    //将窗口向左移动50像素；
+    window.moveBy(-50, 0);
+
+
+窗口大小：
+
+innerWidth、innerHeight、outerWidth、outerHieght。
+四个方法在不同浏览器行为不同。很难确定浏览器窗口位置。
+
+    var pageWidth = window.innerWidth,
+        pageHeight = window.innerHeight;
+    
+    if (typeof pageWidth != "number"){
+        if (document.compatMode == "CSS1Compat"){
+            pageWidth = document.documentElement.clientWidth;
+            pageHeight = document.documentElement.clientHeight;
+        } else {
+            pageWidth = document.body.clientWidth;
+            pageHieght = document.body.clientHeight;
+        }
+    }
+
+对于移动设备，widow.innerWidth和window.innerHeight保存着可见视口，也就是屏幕上可见页面区域大小。
+在其他移动浏览器中，document.documentElement度量的是布局视口，即渲染后页面实际大小（与可见视口不同，可见视口只是整个页面中的一小部分）。
+对于此功能，必须要先确定浏览器种类，同时检测一下是否在使用移动设备。
+
+调整浏览器窗口大小：
+resizeTo()：接收浏览器窗口新宽度和新高度。
+resizeBy()：接收新窗口与原窗口的宽度和高度之差。
+这两个方法也可能被浏览器禁用。
+
+    //调整到100 * 100
+    window.resizeTo(100, 100);
+    
+    //调整到200 * 150
+    window.resizeBy(100, 50);
+    
+    //调整到300 * 300
+    window.resizeTo(300, 300);
+
+
+导航和打开窗口
+
+window.open()可以导航到一个特定的URL，也可以打开一个新的浏览器窗口。
+接收四个参数：要加载的URL，窗口目标，一个特性字符串以及一个表示新页面是否取代浏览器历史记录中当前加载页面的布尔值。通常只传递一个参数，最后一个参数只在不打开新窗口的情况下使用。
+如果window.open()传了第二个参数，而且该参数是已有窗口或框架的名称，那么就会在具有改名陈歌德窗口或框架中加载第一个参数制定的URL。
+此外，第二个参数也可以是下列任何一个特殊的窗口名称：_self / _parent / _top / _blank
+
+    //等同于<a href="http://www.hothunter.cc" target="topFrame"></a>
+    window.open("http://www.hothunter.cc", "topFrame");
+
+弹出窗口
+如果给window.open()传递第二个参数并不是一个已经存在的窗口或框架，那么就会根据第三个参数位置上传如的字符串创建一个新窗口或者标签页。如果没有传入第三个参数，就会打开一个带有去全部默认设置的新浏览器窗口。在不打开新窗口情况下，会忽略第三个参数。
+第三个参数的表格：  P200
+
+    window.open("http://www.hothunter.cc", "wroxWindow", "height=400,width=400,top=10,left=10,resizable=yes");
+
+window.open()方法会返回一个指向新窗口的引用。引用的对象与其他window对象大致相似，但可以对其进行更多控制，例如有些浏览器的默认情况下可能不允许针对主浏览器窗口调整大小或者移动位置，但允许针对通过window.open()创建的窗口调整大小或者移动位置。
+
+    var wroxWin = window.open("http://www.hothunter.cc", "wroxWindow",  "height=400,width=400,top=10,left=10,resizable=yes");
+    //调整大小
+    wroxWin.resizeTo(500, 500);
+    
+    //移动位置
+    wroxWin.moveTo(100, 100);
+
+调用close()方法可以关闭新打开的窗口
+    
+    wroxWin.close();
+
+仅适用于通过window.open()打开的弹出窗口。队友浏览器的主窗口，如果没有得到用户的允许是不能关闭的。。不过，弹出窗口可以调用top.close()在不经用户允许的情况下关闭自己。
+
+新创建的window对象有一个opener属性，保存着打开它的原始窗口对象。只在弹出窗口中的最外层window对象(top)中有定义，而且指向调用window.open()窗口或框架
+
+    var wroxWin = window.open("http://www.hothunter.cc", "wroxWindow",  "height=400,width=400,top=10,left=10,resizable=yes");
+    alert(wroxWin.opener == window);            //true
+
+原始窗口没有这样指针指向弹出窗口。窗口不跟踪记录他们打开的弹出窗口，因此只能在必要的时候自己手动实现跟踪。
+将opener属性设置为null就是告诉浏览器新创建的标签页不需要与打开它的标签页通信，因此可以再独立的进程中运行。
+标签之间的联系一旦切断，将没有办法恢复。
+
+
+安全限制：P201
+大概就是出于安全的考虑对弹出窗口的各种限制。。
+
+
+弹出窗口的屏蔽程序：
+用户可以将绝大多数不想看到弹出窗口屏蔽掉，在屏蔽时，如果是浏览器内置的额屏蔽程序组织的弹出窗口，那么window.open()很可能就会返回null。此时只要检测这个返回值就可以确定个弹出窗口是否被屏蔽了。
+
+    var wroxWin = window.open("http://www.hothunter.cc", "_blank");
+    if (wroxWin == null) {
+        alert("The popup was blocked!");
+    }
+
+如果是浏览器扩展或者其他程序组织的弹出窗口，那么window.open()通常会抛出一个错误。因此想要准确检测弹出窗口是否被屏蔽，必须在检测返回值的同时，将对window.open()的调用封装在一个try-catch中：
+
+    var blocked = false;    
+    
+    try {
+        var wroxWin = window.open("http://www.hothunter.cc", "_blank");
+        if (wroxWin == null){
+            blocked = true;
+        }
+    } catch (ex) {
+        blocked = true;
+    }
+    
+    if (blocked) {
+        alert("The popup was blocked!");
+    }
+
+在任何情况下，以上代码都可以检测出调用window.open()打开的弹出窗口是不是被屏蔽了。但要注意的是，检测弹出窗口是否被屏蔽只是一方面，并不会组织浏览器显示与被屏蔽的弹出窗口有关的消息。
+
+
+间歇调用和超时调用：
+
+javascript是单线程语言，但允许通过设置超时值和间歇时间值来调度代码在特定的时刻执行。前者是在指定的时间过后执行代码，而后者则是每个指定的时间就执行一次代码。
+
+超时调用使用window对象的setTimeout()方法，两个参数：要执行的代码和以毫秒表示的时间（在执行代码前要等待的毫秒）。第一个参数可以是包含JavaScript代码的字符串（类似eval()），也可以是一个函数
+
+    //不建议传递字符串！可能导致性能损失
+    setTimeout("alert('Hello world')", 1000);
+    
+    //推荐的调用方式：
+    setTimeout(function(){
+        alert("hello world");
+    }, 1000);
+
+第二个参数是一个表示等待多长时间的毫秒，但经过该事件后指定的代码不一定会执行。jaascript是一个单线程的解释器，因此一定时间内只能执行一段代码。为了控制要执行的代码，就有一个favascript任务队列。任务会按照将他们添加到队列的顺序执行。第二个参数告诉再过多长时间把当前任务添加到队列中。如果队列空，那么添加的代码立即执行。如果队列不为空，就等前面的代码执行完了再执行。
+
+setTimeout()调用后会返回一表示超时调用的数值ID，是计划执行的唯一标识符
+clearTimeout()取消尚未执行的调用计划。
+
+    //设置超时时间
+    var timeoutId = setTimeout(funtion(){
+        alert("hello world");
+        }, 1000);
+    
+    //把它取消：
+    clearTimeout(timeoutId);
+
+间歇调用：按照指定的时间间隔重复执行代码，直至间歇调用被取消挥着页面被卸载。
+setInterval()，接受的参数与setTimeout()相同。
+
+    //不建议传递字符串！
+    setInterval("alert("hello world")" , 10000);
+    
+    //推荐的调用方式
+    setInterval(function(){
+        alert("hello world");
+        }, 10000);
+
+调用setInterval()也会返回一个ID，用于在将来某个时刻取消间歇调用。
+
+    var num = 0;
+    var max = 10;
+    var intervalId = null;
+    function incrementNumber(){
+        num++;
+        //如果执行次数达到了max设定的值，则取消后续尚未执行的调用
+        if (num == max) {
+            clearInterval(intervalId);
+            alert("Done");
+        }
+    }
+    inTervalId = setInterval(incrementNumber, 500);
+
+这个例子也可以使用超时调用实现
+
+    var num = 0;
+    var max = 10;
+    function incrementNumber(){
+        num ++
+        //如果执行次数未达到max设定的值，则设置另一次超时调用
+        if (num < max){
+            setTimeout(incrementNumber, 500);
+        } else {
+            alert("Done");
+        }
+    }
+    setTimeout(incrementNumber, 500);
+
+在开发中很少使用真正的间歇调用，盐饮食后一个间歇调用可能会在前一个间歇调用结束之前启动。像上面使用超时调用模拟间歇完全可以避免这一点。最好不要使用间歇调用。
+
+
+系统对话框：
+
+alert()/confirm()/prompt()：可以调用系统对话框。
+显示这些对话框时候代码会停止运行，关掉之后会恢复。
+
+对于confirm()，可以确定用户点击了ok还是cancel。
+
+    if (confirm("Are you sure?")) {
+        alert("i am so glad you're sure!");
+    } else {
+        alert("I am sorry to hear you're not sure..");
+    }
+
+prompt()：提示框，两个参数：要显示给用户的文本提示和文本输入域的默认值（可以是一个空字符串）。
+
+    var result = prompt("What is your name?", "");
+    if (result !== null) {
+        alert("Welcome, " + result);
+    }
+
+除此以外还有
+window.find()/window.print();   分别调用浏览器的查找和打印对话框
+
+
+#### location对象
+
+location对象体用了与当前窗口中加载的文档又换的信息，还提供了一些导航功能。
+它既是window对下那个的属性，也是document对象的属性。同时location对象还将URL解析为独立的片段。
+
+* bash      "#contents"     返回URL中的hash(#号后跟零或多个字符串)，如果URL不存在，返回空。
+* host      "www.wrox.com:80"   返回服务器名称和端口号（如果有）
+* hostname      "www.wrox.com"      返回不带端口号的服务器名称
+* href      "http://www.wrox.com"       返回当前加载页面的完整URL，同时location的toString()方法也返回这个。
+* pathname      "/WileyCDA"     返回URL中的目录和（或）文件夹。
+* port      "8080"      返回URL中制定的端口号。如果URL中不包含端口号，则这个属性返回空字符串。
+* protocol      "http:"     返回页面使用的协议，通常是http:/https:
+* search        "?q=javascript"  返回URL的查询字符串。?开头
+
+查询字符串参数：
+
+location.search返回从问号到URL末尾的所有内容，但却没有办法逐个访问其中的每个查询字符串参数。可以：
+
+    function getQueryStringArgs(){
+        //取得查询字符串并去掉开头的问号
+        var qs = (location.search.length > 0 ? location.search.substring(1) : ""),
+        //保存数据对象
+        var args = {},
+        //取得每一项
+        items = qs.length ? qs.split("&") : [],
+        items = null,
+            name = null,
+            value = null,
+            //在for循环中使用
+            i = 0,
+            len = items.length;
+        //逐个将每一项添加到args对象中
+        for (i=0; i < len; i++){
+            item = items[i].split("=");
+            name = decodeURIComponent(item[0]);
+            value = decodeURIComponent(item[1]);
+            if (name.length) {
+                args[name] = value;
+            }
+        }
+        return args;
+    }
+
+    //假设查询字符串是?q=javascript&num=10
+    
+    var args = getQueryStringArgs();
+    
+    alert(args["q"]);           //"javascript"
+    alert(args["num"]);         //"10"
+
+
+位置操作：
+
+使用assign()方法为其传递一个URL，可以立即打开新URL并在浏览器的历史记录中生成一条记录：
+
+    location.assign("https://www.hothunter.cc");
+
+如果是将location.href/window.location 设置一个URL值，也会以该值调用assign()
+
+    window.location = "http://www.hothunter.cc";
+    location.href = "http://www.hothunter.cc";
+
+另外修改location对象的其他属性也可以改变当前加载的页面：
+
+    //假设初始的URL为 http://www.hothunter.cc/index
+    
+    //将URL修改为 "http://www.hothunter.cc/index/#section1"
+    location.hash = "#section1";
+    
+    //将URL修改为"http://www.hothunter.cc/index/?q=javascript"
+    location.search = "?q=javascript";
+    
+    //将URL修改为"http://www.google.com/index"
+    location.hostname = "www.google.com";
+    
+    //将URL修改为"http://www.google.com/hothunter"
+    location.pathname = "hothunter";
+    
+    //将URL修改为"http://www.google.com:8080/index"
+    location.port = 8080;
+
+每次修改location的属性（hash除外），页面都会以新的URL重新加载
+
+当浏览器位置改变时，要禁用浏览器的“后退”功能可以使用replace()，调用之后，用户不能回到前一个页面。
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>You won't be able to get back here</title>
+    </head>
+    <body>
+        <p>Enjoy this page for a second, because you won't be coming back here.</p>
+        <script type="text/javascript">
+            setTimeout(function(){
+                location.replace("http://www.hothunter.cc")
+                }, 1000);
+        </script>
+    </body>
+    </html>
+
+reload()：重新加载当前显示地页面。如果调用而不传递任何参数，页面就会以组有效的方式重新加载。如果页面自上次请求以来并没有改变过，页面就会从浏览器缓存中重新加载。如果要强制从了服务器重新加载，需要：
+
+    location.reload();          //重新加载（有可能从缓存加载）
+    location.reload(true);      //重新加载（从服务器重新加载）
+
+位于reload()之后的代码可能会不被执行，取决于网络延迟或者系统资源等因素。
+
+
+#### navigator 对象
+
+用于识别客户端浏览器类型。见P210表格。
+
+
+检测插件：
+
+对于非IE浏览器，可以使用plugins数组，包涵下列属性：
+
+* name：插件的名字
+* description：插件的文件名
+* filename：插件的文件名
+* length：插件所处理的MIME类型数量。
+
+name属性会包含检测插件必须的所有信息，但有时候也不完全如此，检测插件时，需要循环迭代每个插件并将插件的name与给定的名字进行比较：
+
+    function hasPlugin(name){
+        name = name.toLowerCase();
+        for (var i=0; i< navigator.plugins.length; i++){
+            if (navigator.plugins[i].name.toLowerCase().indexOf(name) > -1){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    //检测Flash
+    alert(hasPlugin("Flash"));
+    
+    //检测QuickTime
+    alert(hasPlugin("QuickTime"));
+
+对于IE，检测插件的唯一方式就是使用专有的ActiveXObject类型，并尝试创建一个特定插件的实例。IE是以COM对象的方式实现插件的，而COM对象使用唯一标识符来标识。因此想检查特定的插件，就必须知道其COM标识符。例如，FLash的标识符是ShockwaveFlash.ShockwaveFlash。
+
+    //检测IE中的插件
+    function hasIEPlugin(name){
+        try{
+            new ActiveXObject(name);
+            return true;
+        } catch (ex) {
+            return false;
+        }
+    }
+    
+    //检测Flash
+    alert(hasIEPlugin("ShockwaveFlash.ShockwaveFlash"));
+    
+    //检测QuickTime
+    alert(hasIEPlugin("QuickTime.QuickTime"));
+
+典型的做法是针对每个插件分别创建检测函数，而不是使用前面两种：
+
+    //检测所有浏览器中的Flash
+    function hasFlash(){
+        var result = hasPlugin("Flash");
+        if(!result){
+            result = hasIEPlugin("ShockwaveFlash.ShockwaveFlash");
+        }
+        return result;
+    }
+    
+    //检测所有浏览器中的QuickTime
+    function hasQuickTime(){
+        var result = hasPlugin("QuickTime");
+        if(!result){
+            result = hasIEPlugin("QuickTime.QuickTime");
+        }
+        return result;
+    }
+    
+    //检测Flash
+    alert(hasFlash());
+    
+    //检测QuickTime
+    alert(hasQuickTime());
+
+
+注册处理程序：
+
+registerContentHandler()/registerProtocolHandler()。可以让一个站点指明它可以处理特定类型信息。随着RSS阅读器和在线电子邮件兴起，这玩意就有用了。
+registerContentHandler()接收三个参数：要处理MIME类型、可以处理该MIME类型的页面URL以及应用程序的名称。
+要将一个站点注册为处理RSS源的处理程序，可以：
+
+    navigator.reguisterContentHandler("application/rss+xml", "http://www.somereader.com?fead=%s", "Some Reader");
+
+registerProtocolHandler()方法，接收三个参数：要处理的协议（例如mailto或者ftp）、处理该协议的页面的URL和应用程序的名称。
+
+    navigator.registerProtocolHandler("mailto", "http://www.somemailclient.com?cmd=%s", "Some Mail Client");
+
+
+#### screen 对象
+
+JavaScript有几个对象在编程中用处不大，这个screen就是其张志义。只用来表明客户端的能力。包括浏览器窗口外部的显示器的信息，像素宽度和高度等。
+P214。表格
+主要出现在测定客户端能力的站点跟踪工具中，通常不用于影响功能。
+
+
+#### history 对象
+
+history对象个保存着用户上网的历史记录，从窗口被打开的那一刻算起。history是window对象的属性，因此每个浏览器窗口。每个标签页乃至每个框架，都有自己的history对象与特定的window对象关联。出于安全考虑，开发人员无法得知用户浏览过的URL。不过借由用户访问过的页面列表，同样可以在不知道实际URL的情况下实现后退和前进。
+
+使用go()方法可以再用户的历史记录中任意跳转，可以向后也可以向前。接收一个参数，表示向后或想起跳转的页面数的饿一个整数值。
+
+    //后退一页
+    history.go(-1);
+    
+    //前进一页
+    history.go(1);
+    
+    //前进两页
+    history.go(2);
+
+也可以传递字符串，浏览器会跳转到历史记录中包含该字符串的第一个位置，可能后退也可能前进，具体看哪个位置最近。如果历史不存在包含该字符串，那就什么都不做。
+
+    //跳转到最近的hothunter.cc
+    history.go("hothunter.cc");
+
+同时还有back()/forward()来代替go()。
+
+    //后退一页
+    history.back();
+    
+    //前进一页
+    history.forward();
+
+history还有一个length属性，保存着历史记录的数量。包括所有历史记录。
+
+
+---
+
+
+### 第九章 客户端检测
+
+//TODO:这个先放一放
+
+
+---
+
+### 第十章 DOM
+
+DOM（文档对象模型）是针对HTML和XML文档的一个API。描绘了一个层次化的节点树，允许开发人员添加、移除和修改页面的某一部分。
+
+#### 节点层次
+
+    <html>
+        <head>
+            <title>Sample Page</title>
+        </head>
+        <body>
+            <p>Hello World!</p>
+        </body>
+    </html>
+
+文档节点是每个文档的根节点。这个例子中，文档节点只有一个子节点即<html>元素，称之为文档元素。文档元素是文档的最外层元素，文档中的其他所有元素都包含在文档元素中。每个文档只能有一个文档元素。在HTML页面中，文档元素始终都是<html>元素。在XML中，没有预定义的元素，因此任何元素都可能成为文档元素。
+每一段标记口可以通过树中的一个节点来表示：HTML元素通过元素节点表示，特性（attribute）通过特性节点表示，文档类型通过文档类型节点表示，而注释通过注释节点表示，公有12种节点类型，都继承自一个基类型。
+
+
+Node类型：
+除了IE之外，在其他所有浏览器中都可以访问这个类型。JavaScript中的所有节点类型都继承自Node类型。每个节点都有一个nodeType属性，用于表明节点的类型。：
+
+* Node.ELEMENT_NODE(1);
+* Node.ATTRIBUTI_NODE(2);
+* Node.TEXT_NODE(3);
+* Node.CDATA_SECTION_NODE(4);
+* Node.ENTITY_REFERENCE_NODE(5);
+* Node.ENTITY_NODE(6);
+* Node.PROCESSING_INSTRUCTION_NODE(7);
+* Node.COMMENT_NODE(8);
+* Node.DOCUMENT_NODE(9);
+* Node.DOCUMENT_TYPE_NODE(10);
+* Node.DOCUMENT_FRAGMENT_NODE(11);
+* Node.NOTATION_NODE(12);
+
+通过上面这些常量，就可以容易确定根节点的类型
+
+    if (someNode.nodeType == Node.ELEMENT_NODE){
+        alert("Node is an element");
+    }    
+
+对于任意浏览器：
+
+    if (someNode.nodeType == 1){
+        alert("node is an element");
+    }
+
+nodeName和nodeVlaue:
+两个属性的值完全取决于节点的类型。在使用这两个值以前，最好先检查：
+
+    if(someNode.nodeType == 1){
+        value = someNode.nodeName;          //nodeName  的值是元素的标签名
+    }
+
+
+节点关系：
+节点间的各种关系可以用传统的家族关系来描述，相当于把文档树比喻成家谱。在HTML中，body为html的子元素，html为body的父元素，body和head为同胞元素。
+每个节点都有一个childNodes属性，保存着一个NodeList对象。是一种类数组对象，用于保存一组有序节点，通过位置来访问这些节点。注意NodeList并不是Array的实例。它基于DOM结构动态之星查询的结果，因此DOM结构的变化能够自动反应在NodeList对象中。是有生命、有呼吸的对象。
+
+    var firstChild = someNode.childNodes[0];
+    var secondChild = someNode.childNodes.item(1);
+    var count = someNode.childNodes.length;
+
+可以类似对arguments对象使用Array.prototype.slice()方法将其转换为数组，对NodeList对象也可以采用同样的方法转换为数组:
+
+    //在<=IE8中无效
+    var arrayOfNodes = Array.prototype.slice.call(someNode.childNodes,0);
+
+对于IE：
+    
+    function converToArray(nodes){
+        var array = null;
+        try{
+            array = Array.prototype.slic.call(nodes, 0);  //针对非IE
+        } catch (ex) {
+            array = new Array();
+            for (var i=0, len=nodes.length; i < len; i++){
+                array.push(nodes[i]);
+            }
+        }
+        return array;
+    }
+
+每个节点都有一个parentNode属性，该属性指向文档树中的父节点。
+使用列表中每个节点的previousSibling和newxSibling属性，可以访问同一列表中的其他节点。列表中第一个节点的previousSibling属性值为null，列表中最后一个节点的nextSibling属性的值同样是null。
+
+    if (someNode.nextSibling === null) {
+        alert("last node in the parent's childNodes list.");
+    } else if {
+        alert("first node in the parent's childNodes list.");
+    }
+
+父节点与其第一个和最后一个节点之间的关系。父节点的firstChild和lastChild属性分别指向其childNodes列表中的第一个和最后一个节点。其中，someNode.firstChild === someNode.ChildNOdes[0]，而someNode.lastChild === someNode.childNodes[someNode.childNodes.length-1]。
+虽有节点都有的最后一个属性时ownerDocument，该属性指向表示整个文档的文档节点。表示的是任何节点都属于它所在的文档，任何节点都不能同时存在于两个或更多个文档中。通过这个属性，可以不必再节点层次中通过层层回溯到达顶端，而是可以直接访问文档节点。
+
+操作节点：
+
+关系指针都是只读的。
+操作节点的方法：最常用的，appendChild()，用于向childNodes列表的末尾添加一个节点。添加后，childNodes的新增节点、父节点以及以前的最后一个子节点的关系指针会相应的更新。更新后，appendChild()返回新增的节点。
+
+    var returnedNode = someNode.appendChild(newNode);
+    alert(returnedNode == newNode);             //true
+    alert(someNode.lastChild == newNode);       //true
+
+如果传入到appendChild()中的节点已经是文档的一部分，结果就是将该节点从跟原来的位置转移到新位置。即使可以将DOM树看成是由一系列指针连接起来的，但任何DOM节点也不能同时出现在文档中的多个位置上。
+如果在调用appendChild()时传入了父节点的第一个子节点，那么该子节点就会成为父几点的最后一个子节点。
+
+    //someNode有多个子节点
+    var returnedNode = someNode.appendChild(someNode.firstChild);
+    alert(returnedNode == someNOde.firstChild);     //false
+    alert(returnedNode == someNode.lastChild);      //true
+
+insertBefore()：吧节点放在childNodes列表中某个特定位置。两个参数：要插入的节点和作为参照的节点。
+
+    //插入后成为最后一个子节点
+    returnedNode = someNode.insertBefore(newNode, null);
+    alert(newNode == someNode.lastChild);   //ture
+    
+    //插入后成为第一个子节点
+    var returnedNode = someNode.insertBefor(newNode, someNode.firstChild);
+    alert(returnedNOde == newNode);     //true
+    alert(newNode == someNOde.firstChild);      //ture
+    
+    //插入到最后一个子节点前面
+    returnedNOde = someNode.insertBefore(newNode, someNOde.lastChild);
+    alert(newNode==someNode.childNodes[someNode.childNodes.length-2]);//true   
+
+replaceChild()：替换节点，两个参数：要插入的节点和要替换的节点。要替换的节点将由这个方法韩慧并从文档树中北一处，同时由要插入的节点占据其位置。
+在使用replaceChild()插入一个节点时，该节点的所有关系指针都会从被它替换的节点赋值过来。从技术讲，被替换的节点仍然还在文档中，但它在文档中已经没有了自己的位置。
+
+    //替换第一个子节点
+    var returnedNode = someNode.replaceChild(newNode,someNode.firstChild);
+    
+    //替换最后一个子节点
+    returnedNode = someNode.replaceChild(newNode, someNOde.lastChild);
+
+removeChild()：移除节点，一个参数：要被移除的节点。被移除的节点将成为方法的返回值。
+
+    //移除第一个子节点
+    var formerFirstChild = someNode.removeCHild(someNOde.firstChild);
+    
+    //移除最后一个子节点
+    var formerLastChild = someNode.removeChild(someNode.lastChild);
+
+
+其他方法：
+
+cloneNode()：用于创建调用这个方法的节点的一个完全相同的副本。接收一个布尔值参数，表示是否执行深度赋值。在参数为true时，深复制，也就是复制节点及其整个子节点树；false时，浅复制，值赋值节点本身。复制后返回的节点副本属于文档所有，但并没有未它指定父节点。
+
+    <ul>
+        <li>item 1</li>
+        <li>item 2</li>
+        <li>item 3</li>
+    </ul>
+
+    var deepList = myList.cloneNode(ture);
+    alert(deepList.childNodes.length);          //3(IE<9)或7（其他浏览器）
+    
+    var shallowList = myList.cloneNode(false);
+    alert(shallowList.chidNodes.length);        //0
+
+normalize()：处理文档树中的文本节点。听说后面还有讲。
+
+
+Document 类型
+
+JavaScript通过Document类型表示文档。在浏览器中,document对象是HTMLDocument（继承自Document类型）的一个实例，表示整个HTML页面。document对象是window对象的一个属性，因此可以将其最为全局对象访问。
+
+* nodeType的值为9
+* nodeName的值为"#document"
+* nodeValue的值为null
+* parentNode的值为null
+* ownerDocument的值为null
+* 其子节点可能是一个DocumentType（最多一个）、Element（最多一个）、ProcessingInstruction或Comment
+
+
+文档和子节点：
+
+快速便捷访问子节点的方式：
+documentElement：该属性始终指向HTML页面中的<html>元素
+childNodes：使用该列表访问文档元素
+
+    <html>
+        <body>
+            
+        </body>
+    </html>
+
+    var html = document.documentElement;        //取得对<html>的引用
+    alert(html === document.childNodes[0]);     //true
+    alert(html === document.firstChild);            //true
+
+document.body：直接指向<body>元素：
+
+    var body = document.body;           //取得对<body>的引用
+
+DocumentType：通常和<!DOCTYPE>标签看成一个与文档其他部分不同的实体，通过doctype属性来访问
+
+    var doctype = document.doctype;
+
+但是不同浏览器对document.doctype的支持都不一致，因此这个属性的用处有限。
+
+注释：出现在<html>元素外部的注释应该算是文档的子节点。然而不同的浏览器在是否解析这些注释以及能否争取处理他们等方面，存在差异。P255
+
+文档信息：
+
+document.title：
+
+    //取得文档标题
+    var originalTitle = document.title;
+    
+    //修改文档标题
+    document.title = "welcome to HotHunter.cc";
+
+URL属性包含页面中完整的URL、
+domain属性中只包含页面的域名
+referrer属性中保存着链接到当前页面的那个页面的URL。在没有来源的情况下，referrer属性中可能会包含空字符串。
+所有这些信息都存与请求的HTTP头部，只不过通过这些属性能够在JavaScript中访问
+
+    //取得完整的URL
+    var url = document.URL;
+    
+    //取得域名
+    var domain = document.domain;
+    
+    //取得链接来的URL
+    var referrer = document.referrer;
+
+domain可以被修改，但是有限制：
+
+    //假设页面来自p2p.hothunter.cc域
+    
+    document.domain = "hothunter.cc";       //成功
+    
+    document.domain = "baidu.com";          //失败
+
+另一个domain的限制：
+
+    //假设页面来自p2p.hothunter.cc域
+    
+    document.domain = "hothunter.cc";       //松散的-成功
+    
+    document.domain = "resume.hothunter.cc";        //紧绷的-失败
+
+
+查找元素：
+
+getElementById()：一个参数，要取得的元素的ID。这里的ID必须与页面中元素id特性（attribute）严格匹配，包括大小写
+    
+    <div id="myDiv">Some text</div>
+
+    var div = document.getElementById("myDiv");
+
+页面中多个元素的ID值相同，getElementById()值返回文档中第一次出现的元素。
+
+getElementsBuTagName()：接收一个参数：要取得严肃的标签名，返回的额是包含零或多个元素的NodeList。在HTML文档中，这个方法返回一个HTMLCollection对象，作为一个“动态”集合，该对象与NodeList类似。
+
+    var images = document.getElementsByTagName("img");
+
+    alert(images.length);       //输出图像的数量
+    alert(images[0].src);       //输出第一个图像元素的src特性
+    alert(images.item(0).src);  //输出第一个图像元素的src特性
+
+HTMLCollection还有一个方法：namedItem()，可以通过元素的name特性取得集合中的项。
+
+    <img src="myimage.gif" name="myImage">
+
+    var myImage = images.namedItem("myImage");
+
+还可以：
+
+    var myImage = images["myImage"];
+
+想要取得文档中的所有元素，可以向getElementsByTagName()中传入"*"。在JavaScript及CSS中，（\*）通常表示"全部"。
+
+    var allElements = document.getELementsByTagName("*");
+
+这一行代码返回HTMLCollection中，包含了整个页面中的所有元素，按照出现先后顺序，同时包含所有注释节点。
+
+getElementsByName()：返回带有给定name特性的所有元素。最常用的是返回单选按钮。
+
+    <fieldest>
+        <legend></legend>
+        <ul>
+            <li>
+                <input type="redio" value="red" name="color" id="colorRed">
+                <lable for="colorRed">Red</lable>
+            </li>
+            <li>
+                <input type="redio" value="blue" name="color" id="colorBlue">
+                <lable for="colorBlue">Blue</lable>
+            </li>
+            <li>
+                <input type="redio" value="green" name="color" id="colorGreen">
+                <lable for="colorGreen">Green</lable>
+            </li>
+        </ul>
+    </fieldest>
+
+    var radios = document.getElementsByName("color");
+
+
+特殊集合：
+
+除了属性和方法，document对象还有一些特殊结合，都是HTMLCollection对象：
+
+* document.anchors:包含文档中所有带name特性的 <a>元素；
+* document.applets：包含文档中所有<applet>元素，因为不再推荐使用该元素，因此这个集合已经不被建议使用。
+* document.forms：包含文档中所有<form>元素，与document.getElementsByTagNmae("form")得到的结果相同。
+* document.images：包含文档中所有<img>元素，与document.getElementsByTagName("img")得到的结果相同
+* document.links：包含文档中所有带href特性的<a>元素。
+
+
+DOM一致性检测：
+
+document.implementation：检测浏览器实现了DOM的哪些部分。
+DOM1只提供一个方法：hasFeature()，接收连个参数：要检测的DOM功能歌德名称以及版本号。
+    
+    var hasXmlDom = document.implementation.hasFeature("XML", "1.0");
+
+P259。可以检测的不同的值的列表
+
+
+文档写入：
+
+将输入流写入到网页中的能力。
+write()/writeln()/open()/close()。
+write()和writeln()方法都接受一个字符串阐述，即呀写入输入流中的文本。write()会原样写入，writeln()会在字符串的末尾添加一个换行（\n）。
+
+    <html>
+    <head>
+        <title>document.write() Example</title>
+    </head>
+    <body>
+        <p>The current date and time is:
+            <script type="text/javascript">
+                document.write("<strong>"+(new Date()).toString() + "</strong>");
+            </script>
+        </p>
+    </body>
+    </html>
+
+
+
+Element 类型：
+
+Element类型用于表现XML或HTML元素，提供了元素标签名、子节点及特性的访问。
+
+* nodeType的值为1
+* nodeName的值为元素的标签名；
+* nodeValue的值为null
+* parentNode肯能是Document或者Element；
+* 其子节点可能是Element/Text/Comment/ProcessingInstruction/CDATASection/EntityReference
+
+要访问元素的标签名使用nodeName属性，也可以使用tagName属性。返回相同的值（使用后者主要是为了清晰）
+
+    <div id="myDiv"></div>
+
+    var div = document.getElementById("myDiv");
+    alert(div.tagName);         //"DIV"
+    alert(div.tagName == div.nodeName);         //true
+
+在HTML中，标签名始终都以全部大写表示，在XML（有时包括XHTML）中标签名始终会与源码中保持一致。
+
+HTML元素：
+
+所有HTML元素都由HTMLElement类型表示，不是直接通过这个类型，也是通过它的子类型来表示。HTMLElement类型直接继承自Element并添加了一些属性。
+
+* id，元素在文档中的唯一标识符。
+* title，有关元素的附加书名信息，一般通过工具提示条显示。
+* lang，元素内容的语言代码，很少使用
+* dir，语言的方向，值为"ltr"(left-to-right,从左至右)或"rtl"，很少使用。
+* className，与元素的class特性对应，即为元素制定的CSS类。没有将这个属性命名为class，是因为class是ECMAScript的保留字。
+
+示例：
+
+    <div id="myDiv" class="bd" title="BodyText" lang="en" dir="ltr"></div>
+
+    var div = document.getElementById("myDiv");
+    alert(div.id);          //"myDiv"
+    alert(div.className);       //"bd"
+    alert(div.title);       //"BodyText"
+    alert(div.lang);        //"en"
+    alret(div.dir);         //"ltr"
+
+    div.id = "someOtherId";
+    div.className = "fuckme";
+    div.title = "haokunxiang huijia shujiaole ";
+    div.lang = "zh";
+    div.dir = "rtl";
+
+所有HTML元素以及与之关联的类型：P263。
+
+
+取得特性：
+
+操作特性的DOM方法主要有三个：
+getAttribute()/setAttribute()/removeAttribute()。可以针对任何特性使用，包括以HTMLElement类型属性的形式定义的特性。
+
+    var div = document.getElementById("myDiv");
+    alert(div.getAttribute("id"));          //"myDiv"
+    alert(div.getAttribute("class"));       //"bd"
+    alert(div.getAttribute("title"));       //"BodyText"
+    alert(div.getAttribute("lang"));        //"en"
+    alert(div.getAttribute("dir"));         //"ltr"
+
+同时也可以取得自定义特性：
+
+    <div id="myDiv" hothunter="hello"></div>
+
+    var value = document.getElementById("myDiv").getAttribute("hothunter");
+
+
+通过getAttribute()访问style时，返回的style特性值值包含的是CSS文本，而通过属性来访问它则会返回一个对象。由于style属性是用于以变成方式访问元素样式的，因此没有直接映射到style特性。
+通过getAttribute()访问包含事件的元素时，会返回相应代码的字符串。如果访问事件的属性，则会返回一个JavaScript函数（如果未在元素中制定相应特性，返回null）。原因是事件处理程序属性本身就应该被赋予函数值。
+
+
+设置特性：
+
+setAttribute()：两个参数：要设置的特性名和值。如果特性存在，会以制定的值替换现有的，如果不存在，会创建该属性并赋值。
+
+    div.setAttribute("id", "someOtherId");
+    div.setAttribute("class", "fuckmeagain");
+    div.setAttribute("title", "yuelaiyuekunle");
+    div.setAttribute("lang", "zh");
+    div.setAttribute("dir", "rtl");
+
+和上面getAttribute()一样，setAttribute()同样也可以操作自定的特性。
+通过这个方法设置的特性名会被统一被转换为小写形式。
+因为所有特性都是属性，所以直接给属性赋值可以设置特性的值：
+
+    div.id = "someOtherId";
+    div.align = "center";
+
+为DOM添加一个自定义的属性，该属性不会自动成为元素的特性。
+
+    div.mycolor = "red";
+    alert(div.getAttribute("mycolor"));         //null(IE除外)
+
+在大多数浏览器中，上面这个属性都不会自动贬称该元素的特性，因此想通过getAttribute()取得同名特性的值，结果都会返回null。
+可自定义属性在IE中会被当做元素的特性，反之亦然。
+
+removeAttribute()，用于彻底删除元素的特性，调用这个方法不仅会清除特性的值，而且会从元素中完全删除特性。
+
+    div.removeAttribute("class");
+
+在序列化DOM元素时，可以通过它来确切指定要包含哪些特性。
+
+
+attributes属性
+
+Element类型是使用attributes实行的唯一一个DOM节点类型。attributes属性中包含一个NamedNodeMap，与NOdeList蕾西，也是一个“动态”集合。元素的每一个特性都有一个Attr节点表示，每个节点都保存在NamedNodeMap对象中。
+
+* getNamedItem(name)：返回nodeName属性等于name的节点；
+* removeNamedItem(name)：从列表中移除nodeName属性定于name的节点；
+* setNamedItem(node)：向列表中添加节点，以几点的nodeName属性为索引；
+* item(pos)：返回位于数字pos位置处的节点。
+
+attributes属性中包含一系列节点，每个节点的nodeName就是特性的名称，而节点的nodeValue就是特性的值。
+
+    var id = element.attributes.getNamedItem("id").nodeValue;
+    //简写方式：
+    var id = element.attributes["id"].nodeValue;
+
+设置特性的值：
+
+    element.attributes["id"].nodeValue = "someOtherId";
+
