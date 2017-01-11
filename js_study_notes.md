@@ -4637,6 +4637,7 @@ HTML元素：
     alret(div.dir);         //"ltr"
 
     div.id = "someOtherId";
+    
     div.className = "fuckme";
     div.title = "haokunxiang huijia shujiaole ";
     div.lang = "zh";
@@ -4719,3 +4720,583 @@ attributes属性中包含一系列节点，每个节点的nodeName就是特性�
 
     element.attributes["id"].nodeValue = "someOtherId";
 
+removeNamedItem()：返回表示被删除特性的Atrr节点：
+
+    var oldAttr = element.attributes.removeNamedItem("id");
+
+将DOM的狗序列化为XML或XHTML字符串，使用更便利元素属性。
+迭代元素每一个特性，构造成name="value" name="value"这样的形式：
+
+    function outputAttributes(element){
+        var pairs = new Array(),
+                    attrName,
+                    attrValue,
+                    i,
+                    len;
+        for(i=0; len=element.attributes.length; i<len; i++){
+            attrName = element.attributes[i].nodeName;
+            attrValue = element.attributes[i].nodeValue;
+            apirs.push(attrName + "=\"" + attrValue + "\"");
+        }
+        return pairs.join(" ");
+    }
+
+
+创建元素：
+使用document.createElement()方法可以创建新元素，接受一个参数：要创建元素的标签名。
+
+    var div = document.createElement("div");
+
+同时也设置了ownerDocument属性。可以同时操作元素的特性，添加子节点等：
+
+    div.id = "myNewDiv";
+    div.className = "box";
+
+在新元素设置这些特性只是给它们赋予了相应的信息，由于新元素尚未被添加到文档树中，因策设置这些特性不会影响浏览器的显示。可以使用appendChild()/insertBefore()/replaceChild()方法将新元素添加到文档树。
+
+    document.body.appendChild(div);
+
+另一种使用方法：
+
+    var div = document.createElement("<div id=\"myNewDiv\" class=\"box\"></div>");
+
+
+元素的子节点：
+
+如果需要childNodes属性遍历子节点，为避免浏览器之间差异，操作前通常都要先检查nodeType属性：
+
+    far(var i=0, len=element.childNodes.length; i<len; i++){
+        if (element.childNodes[i].nodeType == 1){
+            doSomeThing();
+        }
+    }
+
+获取某个特定的标签名的自己诶按点或后代节点：元素也支持getElementByTagName()方法：
+
+    var ul = document.getElementById("myList");
+    var items = ul.getElementByTagName("li");
+
+需要注意，这里<ul>的后代中只包含直接子元素。不过如果包含更多层次的后代元素，那么各个层次中包含<li>元素也都会返回。
+
+
+Text 类型
+
+包含的是可以照字面解释的纯文本内容。可以包含转义后的HTML字符，但不嫩更包含HTML代码。
+
+* nodeType的值为3
+* nodeName的值为"#text"
+* nodeValue的值为节点所包含的文本
+* parentNode是一个Element
+* 不支持（没有）子节点
+
+可以通过nodeValue睡醒或data属性访问Text节点中包含的文本，这两个属性中包含的值相同，对nodeValue的修改也会通过data反映出来。
+
+* appendDate(text)：将text添加到节点的末尾。
+* deleteDate(offset, count)：从offset指定的位置开始删除count个字符。
+* insertData(offset, text)：在offset指定的位置插入text。
+* replaceDate(offset, count, text)：用text替换从offset开始到offset+count处的字符串。
+* splitText(offset)：从offset指定的位置将当前文本节点分成两个节点。
+* substringData(offset, count)：提取从offset指定的位置开始到offset+count为止处的字符串。
+* 还有一个length属性，保存着节点中字符的数量。== nodeValue.length == data.length
+
+默认每个可以包含内容的元素最多只能有一个文本节点，并且必须确实有内容存在。
+
+    <!没有内容，也就没有文本节点-->
+    <div></div>
+    
+    <!-->有空格，因而有一个文本节点</!-->
+    <div> </div>
+    
+    <!-->有内容，有一个文本节点</!-->
+    <div>Hello World</div>
+
+访问文本子节点：
+
+    var textNode = div.firstChild;      //或者div.childNodes[0];
+
+修改文本节点：
+
+    div.firstChild.nodeValue = "some other message";
+
+在修改文本文档时，字符串会经过转义：
+
+    //输出："Some &lt;strong;other&lt;/strong&gt; message"
+    div.firstChild.nodeValue = "Some <strong>other</strong> message";
+
+
+创建文本节点：
+
+document.createTextNode()：接收一个参数：要插入节点中的文本
+    
+    var textNode = document.createTextNode("<strong>Hello</strong> world!");
+
+创建一个div并向其添加一条信息：
+
+    var element = document.creatElement("div");
+    element.className = "massage";
+    
+    var textNode = document.createTextNode("Hello world");
+    element.appendCHild(textNode);
+    
+    document.body.appendChild(element);
+
+某些情况下一个元素肯恩更包含多个文本子节点
+
+    var element = document.createElement("div");
+    element.className = "message";
+    
+    var textNode = document.createTextNode("Hello");
+    element.appendChild(textNode);
+    
+    var anotherTextNode = document.createTextNode("world");
+    element.appendCHild(anotherTextNode);
+    
+    document.body.appendChild(element);
+
+
+规范化文本节点：
+
+normalize()：如果在一个包含两个或多个文本节点的父元素上调用normailze()方法，则会将所有文本节点合并成一个节点，结果节点的nodeValue等于将合并前每个文本节点的nodeValue值凭借其来的值：
+
+    var element = document.createElement("div");
+    element.className = "message";
+    
+    var textNode = document.creteTextNode("Hello world");
+    element.appendChild(textNode);
+    
+    var anothertextNode = document.createTextNode("Yippee!");
+    element.appendChild(anothertextNode);
+    
+    document.body.appendChild(element);
+    
+    alert(element.childNodes.length);       //2
+    
+    element.normailze();
+    alert(element.childNodes.length);       //1
+    alert(element.firstChid.nodeValue);     //"Hello world!Yippee!"
+
+
+分割文本节点
+
+splitText()：与normailze()相反。将一个文本节点分成两个文本节点，按照指定的位置分割nodeValue值。原来的文本节点包含从开始到指定位置之前的内容，新文本节点包含剩下的文本。返回一个新文本节点，该节点与原节点的parentNode相同。
+
+    var element = document.createElement("div");
+    element.className = "message";
+    
+    var textNode = document.createTextNode("Hello world");
+    element.appendChild(textNode);
+    
+    document.body.appendChild(element);
+    
+    var newNode = element.firstChild.splitText(5);
+    alert(element.firstChild.nodeValue);            //"Hello"
+    alert(newNode.nodeValue);                       //"world"
+    alert(element.childNodes.length);               //2
+
+
+Comment 类型
+
+注释在DOM通过Comment类型表示，特征：
+
+* nodeType：8;
+* nodeName: "#comment";
+* nodeValue: 即注释的内容;
+* prentNode: 可能是Document或者Element；
+* 不支持（没有）子节点
+
+Comment类型Text类型继承自相同的基类，因此又有除splitText()之外的所有字符串操作方法。与Text相似，也可以通过nodeValue或data属性来取得注释的内容。
+
+    <div id="myDiv"><!-- A comment --></div>
+
+    var div = document.getElementById("myDiv");
+    var comment = div.firstChild;
+    alert(comment.data);            //"A comment"
+
+使用document.createComment()并为其传递注释文本也可以创建注释节点
+
+    var comment = document.createComment("A comment");
+
+
+CDATASection 类型
+
+只针对基于XML的文档。不看了  P274
+
+
+DocumentType 类型
+
+也不常用。包含着与文档的doctype有关的所有信息。
+
+    alert(document.doctype.name);
+
+
+DocumentFragment 类型
+
+在所有节点类型中，只有DocumentFragment在文档中没有对用标记。DOM规定文档片段（document fragment）是一种“轻量级”文档，可以包含和控制节点，但不会像完整的文档那样占用额外的资源。
+
+* nodeType: 11;
+* nodeName: "#document-fragment";
+* nodeValue: null;
+* parentNode: null;
+* 子节点可以是Element/ProcessingInstruction/Comment/Text/CDATASection/EntityReference
+
+虽然不能把文档片段直接添加到文档中，但可以将它作为一个“仓库”，保存将来可能会添加的文档中的节点：
+
+    var fragment = document.createDocumentFragment();
+
+如果将文档中的节点添加到文档片段中，就会从文档树中移除该节点，也不会从浏览器中再看到该节点。添加到文档片段中的新节点同样也不属于文档树。可以通过appendChild()或insertBefore()将文档片段中内容添加到。在将文档片段作为参数床底给这两个方法是，世界上只会将文档片段的所有子节点添加到相应位置上；文档片段永远不会成为文档树的一部分。
+
+    <ul id="myList"></ul>
+
+    var fragment = document.createDocumentFragment();
+    var ul = document.getElementById("myList");
+    var li = null;
+    
+    for(var i=0; i<3; i++){
+        li = document.createElement("li");
+        li.appendCHild(document.createTextNode("Item" + (i + 1)));
+        fragment.appendChild(li);
+    }
+    
+    ul.appendChild(fragment);
+
+
+Attr 类型
+
+元素的特性在DOM中以Attr类型表示。从技术角度讲，特性就是存在于元素的attributes属性中的节点
+
+* nodeType: 2;
+* nodeName: 特性的名称；
+* nodeValue: 特性的值；
+* parentNode: null;
+* 在HTML中不支持（么有）子节点；
+* 在XML中子节点可以是Text或EntityReference
+
+特性不被认为是DOM文档树的一部分。
+更多使用getAttrrbute()/setAttribute()/removeAttribute()方法，很少直接引用特性节点。
+
+Attr 三个属性：name：特性名称（与nodeName的值相同）/ value：特性的值（与nodeValue的值相同）/ specified：布尔值，用来区别特性是在代码中指定的，还是默认。
+
+为元素添加align：
+
+    var attr = doc
+    ument.createAttribute("align");
+    attr.value = "left";
+    element.setAttributeNode(attr);
+    alert(element.attributes["align"].value);           //"left"
+    alert(element.getAttributeNode("align").value);     //"left"
+    alert(element.getAttribute("align"));               //"left"
+
+
+#### DOM 操作技术
+
+由于浏览器中 充斥着隐藏的陷阱和不兼容问题，用s代码处理DOM的某些部分有一些需要注意。
+
+动态脚本：
+
+这里指的是页面加载时不存在，但将来的某一时刻通过修改DOM动态添加的脚本。插入外部文件、直接插入js代码
+
+    <script type="text/javascript" src="client.js"></script>
+
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "client.js";
+    document.body.appendChild(script);
+
+整个过程可以用函数封装：
+
+    function loadScript(url){
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = url;
+        document.body.appendChild(script);
+    }
+    
+    loadScript("client.js");
+
+另外一种方式：
+
+    <script type="text/javascript">
+        function sayHi(){
+            alert("hi");
+        }
+    </script>
+
+IE将<script>视为一个特殊的元素，不允许DOM访问其子节点。不过可以使用</script>元素的text属性来指定js代码：
+
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.text = "function sayHi(){alert("Hi")}";
+    document.body.appendChild(script);
+
+使用函数：
+
+    function loadScriptString(code){
+        var script = document.createElement("script");
+        script.typt = "text/javascritp";
+        try{
+            script.appendChild(document.createTextNode(code));
+        }catch (ex){
+            script.text = code;
+        }
+        document.body.appendChild(script);
+    }
+    
+    loacScritpString("function sayHi(){alert("Hi")}");
+
+
+动态样式：
+
+把CSS样式包含到HTML：<link rel="stylesheet" href="">/<style></style>
+
+    <link rel="stylesheet" href="styles.css" type="text/css">
+
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = "style.css";
+    var head = document.getElementByTagName("head")[0];
+    head.appendChild(link);
+
+使用函数：
+
+    function loadStyles(url){
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href = url;
+        var head = document.getElementsByTagName("head")[0];
+        head.appendChild(link);
+    }
+    
+    loadStyles("styles.css");
+
+使用style标签：
+
+    <style type="text/css">
+        body{
+            background-color: red;
+        }
+    </style>
+
+使用函数：
+
+    function loadStyleString(css){
+        var style = document.createElement("style");
+        style.type = "text/css";
+        try{
+            style.appendChild(document.createTextNode(css));
+        }catch (ex){
+            style.styleSheet.cssText = css;
+        }
+        var head = document.getElementsByTagName("head")[0];
+        head.appendChild(style);
+    }
+    
+    loadStrleString("body{background-color:red;}");
+
+
+操作表格：
+
+<table></table>涉及的标签多，因而使用核心DOM方法创建和修改表格往往免不了要编写大量的代码。（老实说这里我不想写了，太多了。。）
+
+    <table border="1" width="100%">
+        <tbody>
+            <tr>
+                <td>cell 1, 1</td>
+                <td>cell 2, 1</td>
+            </tr>
+            <tr>
+                <td>cell 1, 2</td>
+                <td>cell 2, 2</td>
+            </tr>
+        </tbody>
+    </table>
+
+要使用核心DOM创建这些元素，需要很多代码，这里不写了。P281
+
+包括HTML DOM为<table></table>/<tbody></tbody>和<tr></tr>元素添加了一些属性和方法：  P282
+
+使用这些属性和方法，可以极大的减少创建表格所欲的代码数量。
+
+    //创建table
+    var table = document.createElement("tabel");
+    table.border = 1;
+    table.width = 100%;
+    
+    //创建tbody
+    var tbody = document.createElement("tbody");
+    table.appendChild(tbody);
+    
+    //创建第一行
+    tbody.insertRow(0);
+    tbody.rows[0].insertCell(0);
+    tbody.rows[0].cells[0].appendChild(document.createTextNode("cell 1, 1"));
+    tbody.rows[0].insertCell(1);
+    tbody.rows[0].cells[1].appendChild(document.createTextNode("cell 2, 1"));
+    
+    //创建第二行
+    tbody.insertRow(1);
+    tbody.rews[1].insertCell(0);
+    tbody.rews[1].cells[0].appendChild(document.createTextNode("cell 1, 2"));
+    tbody.rews[1].insertCell(1);
+    tbody.rews[1].cells[1].appendChild(document.createTextNode("cell 2, 2"));
+    
+    //将表格添加到文档主体中
+    document.body.appendChild(table);
+
+
+使用 NodeList
+
+NodeList/NamedNodeMap/HTMLCollection
+这三个集合都是“动态的”，每当文档结构发生变化时，它们都会得到更新。从本质上说，所有NodeList兑现个都是在访问DOM文档时实时运行的查询。
+下面代码会导致无限循环：
+
+    var divs = document.getElementsByTagName("div"),
+        i,
+        div;
+    
+    for(i=0; i < divs.length; i++){
+        div = document.createElement("div");
+        document.body.appendChild(div);
+    }
+
+如果想要迭代一个NodeList，最好使用length属性初始化第二个变量，然后将迭代器与该变量比较。
+
+    var divs = document.getElementsByTagName("div"),
+        i,
+        len,
+        div;
+    
+    for (i=0, len=divs.length; i<len ;i++) {
+        div = document.createElement("div");
+        document.body.appendChild(div);
+    }
+
+
+---
+
+### 第十一章  DOM扩展
+
+对DOM的两个注意卓展是Selectors API（选择符API）和HTML5。都源自开发社区
+
+#### 选择符API
+
+根据CSS选择符现则与某个模式匹配的DOM元素。实际上jQuery的核心就是通过css选择符查询DOM文档取得元素的引用，从而抛开getElementById()和getElementsByTagName()。
+两个核心方法：querySeletor()和querySelectorAll()。在兼容的浏览器中，可以通过Document和Element类型的实例调用他们。
+
+querySelector()：接收一个css选择符，返回与该模式匹配的第一个元素，如果没有找到匹配的元素，返回null。
+
+    //取得body元素
+    var body = document.querySelector("body");
+    
+    //取得ID为'myDiv'的元素
+    var myDiv = document.querySelector("#myDiv");
+    
+    //取得类为"selected"的第一个元素
+    var selected = document.quertSelector(".selected");
+    
+    //取得类为"button"的第一个图像元素
+    var img = document.body.querySelector("img.button");
+
+通过Document类型调用querySelector()方法时，会在文档元素的范围内查找匹配的元素。而通过Element类型调用querySelector()方法时，之后再该元素后代元素的范围内查找匹配的元素。
+
+querySelectorAll()：接收的参数与querySelector()相同，都是css选择符，但返回的是所有匹配的元素而不只是一个元素，返回的是一个NodeList实例。
+具体来说，返回的值实际上是带有说有属性和方法的NodeList，而底层实现类似一组元素的快照，而非不断对文档进行搜索的带动态查询。、
+能够调用querySelectorAll()的类型包括Document/Element和DocumentFragment。
+
+    //取得某<div>中所有<em>元素（类似getElementsByTagName("em")）
+    var ems = document.getElementById("myDiv").quertSelectorAll("em");
+    
+    //取得类为"selectored"的所有元素
+    var selectoreds = document.quertSelectorAll(".selectored");
+    
+    //取得所有<p>元素中的所有<strong>元素
+    var strongs = document.querySelectorAll("p storng");
+
+要取得返回的NodeList中的每一个元素，可以使用item()方法，也可以使用方括号：
+
+    var i, len, strong;
+    for(i=0, len=strongs.length; i<len; i++) {
+        strong = strongs[i];     //或者strongs.item[i]
+        strong.className = "improtant";
+    }
+
+
+matchesSelector()  :  Selectors API Level2为Element新增的方法。接收一个css的选择符，如果调用元素与该选择符匹配，返回true。否则false。
+
+    if(document.body.mathcesSelector("body.page1")){
+        //true
+    }
+
+    在取得某个元素引用的情况下，使用这个而方法能够方便检测是否会被querySelector()或querySelectorAll()方法返回。
+
+
+
+####  元素遍历
+
+对于元素间的空格，除了IE9及之前版本，所有浏览器都会返回文本节点，就导致了使用childNodes和firstChild等属性时行为不一致。为了解决这个问题，新定义了一组属性规范。
+
+* childElementCount: 返回子元素（不包括文本节点和注释）的个数
+* firstElementChild: 指向第一个子元素； firstCHild的元素版
+* lastElementChild: 指向最后一个子元素；lastChild的元素版
+* previousElementSibling: 指向前一个同辈元素；previousSibling的元素版
+* nextElementsibling: 指向后一个同辈元素；nextSibling的元素版
+
+看一个要夸浏览器遍历某元素的而所有子元素的例子：
+
+    var i, len, child = element.firstChild;
+    whild(child != element.lastChild){
+        if(child.nodeType == 1){        //检查是不是元素
+            processChild(child);
+        }
+        child = child.nextSibling;
+    }
+
+若使用Element Traversal的新增元素：
+
+    var i, len, child = element.firstElementChild;
+    while(child != element.lastElementChild){
+        processChild(child);        //已知其实元素
+        child = child.nextElementSibling;
+    }
+
+
+#### HTML5
+
+HTML5规则围绕如何使用新增标记定义了大量JS API。其中一些API与DOM重叠，定义了浏览器应该支持的DOM扩展。
+
+class在html中被大量使用，为了简化css类的用法：
+
+getElementByClassName(): 接收一个参数，一个包含一或多个类名的字符串，返回带有指定类的所有元素的NodeList。传入多个类名时，类名的先后顺序不重要。
+
+    //取得所有类中包含"username"和"current"的元素，类名的先后顺序无所谓。
+    var allCurrentUsernames = document.getElementsByClassName("username current");
+    
+    //取得ID为“myDiv”的元素中带有类名"selected"的所有元素
+    var selected = document.getElementById("myDiv").getElementByClassName("selected");
+
+使用这个方法可以更方便为带有某些类的元素添加时间处理程序，从而不必再局限于使用ID或标签名。不过因为返回的兑现格式NodeList，所以使用这个方法与使用getElementsByTagName()以及其他返回NodeList的DOM方法都具有同样的性能问题。
+
+在操作类名时，通过修改className属性进行添加、删除和替换类名。因className是一个字符串，因此每次操作时需要重新设置整个字符串的值。
+
+    <div class="bd user disabled">...</div>
+
+    //删除"user"
+    
+    //首先取得类名字符串并拆分成数组
+    var classNames = div.className.split(/\s+/);
+    
+    //找到要删除的类名
+    var pos = -1, i, len;
+    for (i=0, len=classNames.length; i<len; i++) {
+        if(classNames[i] == "user") {
+            pos = i;
+            break
+        }
+    }
+    
+    //删除类名
+    classNames.splice(i,1);
+    
+    //把剩下的类名拼成字符串
+    div.classNames = classNames.join(" ");
