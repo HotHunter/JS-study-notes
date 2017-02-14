@@ -2221,7 +2221,7 @@ P136，一些高大上的Math方法
         });
     
     alert(person.name);         //"hothunter"
-    person.name = "lianhui";
+    person.name = "someoneElse";
     alert(person.name);         //"hothunter"
 
     var person = {};
@@ -2349,7 +2349,7 @@ Object.getOwnPropertyDescriptor()：取得给定属性的描述符。两个参�
     }
     
     var person1 = createPerson("hothunter", 23, "software enginner");
-    var person2 = createPerson("lianhui", 9, "doubi");
+    var person2 = createPerson("someoneElse", 9, "nobody");
 
 缺点：无法解决对象识别的问题（即怎样知道一个对象的类型）
 
@@ -2371,7 +2371,7 @@ Object.getOwnPropertyDescriptor()：取得给定属性的描述符。两个参�
     }
     
     var person1 = new Person("hothunter", 23, "noob");
-    var person2 = new Person("lianhui", 9, "motherfucker");
+    var person2 = new Person("someoneElse", 9, "motherfucker");
 
 与之前createPerson()相比，没有显示创建对象；直接将属相和方法赋给了this；没有return。
 够赞函数始终都应该以一个大写字母开头，非构造函数应该以一个小写字母开头。
@@ -2422,7 +2422,7 @@ Object.getOwnPropertyDescriptor()：取得给定属性的描述符。两个参�
     }
     
     var person1 = new Person("hothunter", 23, "fucker");
-    var person2 = new Person("lianhui", 9, "doubi");
+    var person2 = new Person("someoneElse", 9, "nobody");
 
 以上方法，由于sayName包含的是一个指向函数的指针，因此person1和person2共享了在全局作用域中定义的同一个sayName()函数。
 但问题是如果需要方法很多，就需要在全局环境创建多个全局函数，繁琐的同时会失去函数的封装性。
@@ -2479,8 +2479,8 @@ Object.getPrototypeOf():返回[[prototype]]的值
     var person1 = new Person();
     var person2 = new Person();
     
-    person1.name = "lianhui";
-    alert(person1.name);        //"lianhui"
+    person1.name = "someoneElse";
+    alert(person1.name);        //"someoneElse"
     alert(person2.name);        //"hothunter"
 
 使用delete可以完全删除实例属性，从而让我们能够重新访问原型中的属性。
@@ -2497,8 +2497,8 @@ Object.getPrototypeOf():返回[[prototype]]的值
     var person1 = new Person();
     var person2 = new Person();
     
-    person1.name = "lianhui";
-    alert(person1.name);        //"lianhui"     --  来自实例
+    person1.name = "someoneElse";
+    alert(person1.name);        //"someoneElse"     --  来自实例
     alert(person2.name);        //"hothunter"       --  来自原型
     
     delete person1.name;
@@ -2520,8 +2520,8 @@ hasOwnProperty():检测一个属性存在于实例中，还是原型中。只在
     
     alert(person1.hasOwnProperty("name"));      //false
     
-    person1.name = "lianhui";           
-    alert(person1.name);        //"lianhui" --来自实例
+    person1.name = "someoneElse";           
+    alert(person1.name);        //"someoneElse" --来自实例
     alert(person1.hasOwnProperty("name"));      //true
     
     alert(person2.name);        //"hothunter"   --来自原型
@@ -2551,8 +2551,8 @@ hasOwnProperty():检测一个属性存在于实例中，还是原型中。只在
     alert(person1.hasOwnProperty("name"));          //false
     alert("name" in person1);            //true
     
-    person1.name = "lianhui";
-    alert(person1.name);            //"lianhui"--来自实例
+    person1.name = "someoneElse";
+    alert(person1.name);            //"someoneElse"--来自实例
     alert(perosn1.hasOwnProperty("name"));          //true
     alert("name" in person1);            //true
     
@@ -2584,7 +2584,7 @@ hasOwnProperty():检测一个属性存在于实例中，还是原型中。只在
     var person = new Person();
     alert(hasPrototypeProperty(person, "name"))         //true
     
-    person.name = "doubi";
+    person.name = "nobody";
     alert(hasPrototypeProperty(person, "name"));        //false
 
 使用for-in循环时，返回的是所有嫩巩固通过对象访问、可枚举的（enumerated）属性，包括存在于实例、原型中的属性。屏蔽了原型中不可枚举的属性（[[Enumerable]]被标记为false）的实例也会被循坏。
@@ -2738,7 +2738,7 @@ hasOwnProperty():检测一个属性存在于实例中，还是原型中。只在
         constructor : Person,
         name : "hothunter",
         age : 23
-        friends : ["lianhui", "doubi"],
+        friends : ["someoneElse", "nobody"],
         sayName : function(){
             alert(this.name);
         }
@@ -2749,8 +2749,8 @@ hasOwnProperty():检测一个属性存在于实例中，还是原型中。只在
     
     person1.friends.push("Van");
     
-    alert(person1.friends);         //"lianhui,doubi,Van"
-    alert(person2.friends);         //"lianhui,doubi,Van"
+    alert(person1.friends);         //"someoneElse,nobody,Van"
+    alert(person2.friends);         //"someoneElse,nobody,Van"
     alert(person1.friends === person2.friends);     //true
 
 实例一般都要有属于自己的全部属性。这个问题正是很少看到有人单独使用原型模式的原因。
@@ -2775,7 +2775,7 @@ hasOwnProperty():检测一个属性存在于实例中，还是原型中。只在
     }
     
     var person1 = new Person("hothunter", 23, "student");
-    var person2 = new Person("lianhui", 9, "doubi");
+    var person2 = new Person("someoneElse", 9, "nobody");
     
     person1.friends.push("fri3");
     alert(person1.friends);         //"fri1,fri2,fri3"
@@ -3081,9 +3081,9 @@ ECMAScript只支持实现继承，实现继承主要是依靠原型链实现。
     instance1.sayName();                //"hothunter"
     instance1.sayAge();                 //23
     
-    var instance2 = new SubType("doubi", 9);
+    var instance2 = new SubType("nobody", 9);
     alert(instance2.colors);            //"red,blue,green,black"
-    instance2.sayName();                //"doubi"
+    instance2.sayName();                //"nobody"
     instance2.sayAge();                 //9
 
 组合式继承最大不足是无论什么情况下，都会调用两次超类型构造函数：一次是在创建子类型原型的时候，另一次是在子类型构造函数内部。
@@ -3105,7 +3105,7 @@ ECMAScript只支持实现继承，实现继承主要是依靠原型链实现。
     };
     
     var anotherPerson = object(person);
-    anotherPerson.name = "doubi";
+    anotherPerson.name = "nobody";
     anotherPerson.friends.push("fri4");
     
     var yetAnotherPerson = object(person);
@@ -3122,7 +3122,7 @@ ECMAScript5新增Object.create()规范化原型式继承。接收两个参数：
     };
     
     var anotherPerson = object.create(person);
-    anotherPerson.name = "doubi";
+    anotherPerson.name = "nobody";
     anotherPerson.friends.push("fri4");
     
     var yetAnotherPerson = object.create(person);
@@ -3138,11 +3138,11 @@ ECMAScript5新增Object.create()规范化原型式继承。接收两个参数：
     
     var anotherPerson = Object.create(person, {
         name : {
-            value : "doubi"
+            value : "nobody"
         }
         });
     
-    alert(anotherPerson.name);          //"doubi"
+    alert(anotherPerson.name);          //"nobody"
 
 只想让一个对象与另一个对象保持类似的情况下，原型式继承是完全可以胜任的。但包含应用类型值的属性始终都会共享相应的值，就像使用原型模式一样。
 
@@ -3550,8 +3550,8 @@ js从不提示是否多次声明了同一个变量。是会对后续的声明视
     
     var person = new Person("hothunter");
     alert(person.getName());            //"hothunter"
-    person.setName("doubi");
-    alert(person.getName());            //"doubi"
+    person.setName("nobody");
+    alert(person.getName());            //"nobody"
 
 
 静态私有变量：
@@ -3592,12 +3592,12 @@ js从不提示是否多次声明了同一个变量。是会对后续的声明视
     
     var person1 = new Person("hothunter");
     alert(person1.getName());           //"hothunter"
-    person1.setName("doubi");
-    alert(person1.getName());           //"doubi"
+    person1.setName("nobody");
+    alert(person1.getName());           //"nobody"
     
-    var person2 = new Person("lianhui");
-    alert(person1.getName());           //"lianhui"
-    alert(person2.getName());           //"lianhui"
+    var person2 = new Person("someoneElse");
+    alert(person1.getName());           //"someoneElse"
+    alert(person2.getName());           //"someoneElse"
 
 这种方式创建静态私有变量会因为使用原型而增加代码复用，但每个实例都没有自己的私有变量。
 
@@ -5275,7 +5275,7 @@ getElementByClassName(): 接收一个参数，一个包含一或多个类名的�
     //取得ID为“myDiv”的元素中带有类名"selected"的所有元素
     var selected = document.getElementById("myDiv").getElementByClassName("selected");
 
-使用这个方法可以更方便为带有某些类的元素添加时间处理程序，从而不必再局限于使用ID或标签名。不过因为返回的兑现格式NodeList，所以使用这个方法与使用getElementsByTagName()以及其他返回NodeList的DOM方法都具有同样的性能问题。
+使用这个方法可以更方便为带有某些类的元素添加事件处理程序，从而不必再局限于使用ID或标签名。不过因为返回的兑现格式NodeList，所以使用这个方法与使用getElementsByTagName()以及其他返回NodeList的DOM方法都具有同样的性能问题。
 
 在操作类名时，通过修改className属性进行添加、删除和替换类名。因className是一个字符串，因此每次操作时需要重新设置整个字符串的值。
 
@@ -5300,3 +5300,191 @@ getElementByClassName(): 接收一个参数，一个包含一或多个类名的�
     
     //把剩下的类名拼成字符串
     div.classNames = classNames.join(" ");
+
+HTML5新属性：classList属性。是新集合类型DOMTokenList的实例。包括以下方法：
+
+* add(value): 将给定的字符串值添加到列表中。如果已经存在不添加
+* contains(value): 表示列表中是否存在给定的值，如果存在则返回true，否则返回false。
+* remove(value): 从列表中删除给定的字符串。
+* toggle(vlaue): 如果列表中已经存在给定的值，删除它；如果列表中没有给定的值，添加它。
+
+修改上面的例子：
+
+    div.classList.remove("user");
+
+    //删除"disabled"类
+    div.classList.remove("disabled");
+    
+    //添加"current"类
+    div.classList.add("current");
+    
+    //切换"user"类
+    div.classList.toggle("user");
+    
+    //确定子元素中是否包含既定的类名
+    if(div.classList.contains("db") && !div.classList.contains("disabled")){
+        doSomething(div.classList[i]);
+    }
+
+
+焦点管理
+
+document.activeElement：这个属性始终引用DOM中当前获得了焦点的元素。元素获得焦点的方式有：页面加载、用户输入（通常是通过按Tab）和在代码中调用focus()
+
+    var button = document.getElementById("myButton");
+    button.focus();
+    alert(document.activeELement === button);           //true
+
+默认情况下，文档刚刚加载完成时，docment.activeElement中保存的是document.body元素的引用。文档加载期间，document.activeElement的值为null
+
+document.hasFocus()方法：用于确定文档是否获得了焦点：
+
+    var button = document.getElementById("myButton");
+    button.focus();
+    alert(document.hasFocus());         //ture
+
+
+HTMLDocument的变化
+
+readyState：有两个可能的值：loading(正在加载文档)；complete（已经加载完文档）。
+通过它来实现一个指示文档已经加载完成的指示器。
+
+    if (document.readyState == "complete"){
+        //doSomething();
+    }
+
+兼容模式：compatMode属性：浏览器采用了哪种渲染模式。"CSS1Compat"（标准模式）；"BackCompat"(混杂模式)
+
+    if (document.compatMode == "CSS1Compat") {
+        alert("Standards mode");
+    } else {
+        alert("Quirks mode");
+    }
+
+head: 作为对document.body的补充，增加了document.head
+
+    var head = document.head || document.getElementsByTagName("head")[0];
+
+
+
+字符集属性：
+
+charset属性: 表示文档中实际使用的字符集，也可以用来指定新字符集。
+
+    alert(document.charset);        //"UTF-16"
+    document.charset = "UTF-8";
+
+defaultCharset属性：表示根据默认浏览器及操作系统的设置，当前文档默认的字符集应该是什么。如果没有使用默认字符集，那么charset和defaultCharset的值可能不一样
+
+    if (document.charst != document.defultCharset) {
+        alert("Custom character set being userd");
+    }
+
+
+自定义数据属性：
+
+H5可以为元素添加非标准的属性，弹药添加前缀data-。目的是为元素提供与渲染无关的信息，或者提供语义信息。这些属性可以任意添加、随便命名。
+
+    <div id="myDiv" data-appId="12345" data-myname="hothunter"></div>
+
+添加自己定义的属性后，可以通过元素dataset属性来访问自定义属性的值。dataset属性的值是DOMStringMap的一个实例，依旧是一个名值对的映射，每个data-name形式的属性都会有一个对饮给定二属性，只不过属性名没有data-前缀。
+
+    //下面使用的方法仅用于演示
+    
+    var div = document.getElementById("myDiv");
+    
+    //取得自定义属性的值
+    var appId = div.dataset.appid;
+    var myName = div.dataset.myname;
+    
+    //设置值
+    div.dataset.appid = "98765";
+    div.dataset.myname = "nobody";
+    
+    //查看：
+    if (div.dataset.myname){
+        alert("Hello, " + div.dataset.myname);
+    }
+
+
+插入标记：
+
+innerHTML: 该属性在读模式下返回与调用元素的所有子节点（包括严肃、注释和文本节点）对应的HTML标记。在写模式下，会根据制定的值创建新的DOM数，然后用这个DOM数完全替换调用元素原先的所有子节点
+
+    <div id="content">
+        <p>This is a <strong>paragraph</strong> with a list following it.</p>
+        <ul>
+            <li>itme 1</li>
+            <li>item 2</li>
+            <li>item 3</li>
+        </ul>
+    </div>
+
+对于上面的div来说，innerHTML会返回如下字符串：
+
+    <p>This is a <strong>paragraph</strong> with a list following it.</p>
+    <ul>
+        <li>itme 1</li>
+        <li>item 2</li>
+        <li>item 3</li>
+    </ul>
+
+在写模式下，innerHTML的值会被解析为DOM子数，替换调用元素原来的所有子节点。因为它的值被认为是HTML，所以其中的所有标签都会按照浏览器处理HTML的标准方式转换为元素（同样，这里的转换结果也因浏览器而异）。如果设置的值是文本而没有HTML标签，那么结果就是设置纯文本：
+
+    div.innerHTML = "hello world";
+
+    div.innerHTML = "Hello & welcome, <b>\"reader\"</b>";
+得到：
+        
+    <div id="content">Hello &amp; welcome, <b>&quot;reader&quot;</b></div>
+
+注意innerHTML插入<script></script>元素可能出现问题。
+
+    div.innerHTML = "<script defer>alert('hi');<\/script>";     //无效
+
+此时innerHTML字符串一开始（而且整个）就是一个"无作用域的元素"，所以这个字符串会变成空字符串。如果想插入这段脚本，必须在前面添加一个“有作用域的元素”，可以是一个文本节点，也可以是一个没有结束标签的元素如<input>。首选使用input，不需要清除
+
+    div.innerHTML = "_<script defer>alert('hi');<\/script>";
+    div.innerHTML = "<div>&nbsp;</div><script defer>alert('hi');<\/script>";
+    div.innerHTML = "<input type=\"hidden\"><script defer>alert('hi');<\/script>";
+
+大多数浏览器都支持以直观的方式通过innerHTML插入style元素：
+
+    div.innerHTML = "<style type=\"text/css\">body {color:red;}</style>";
+
+不支持innerHTML的元素：col/ colgroup / framset / head / html / style / table/ tbody / thead / tfoot / tr
+
+只要用innerHTML从外部插入HTML，都应该首先以可靠的方式处理HTML。。
+window.toStaticHTML()方法:一个参数：一个HTML字符串。返回一个经过无害处理过的版本（从源HTML中删除所有脚本节点和时间处理程序属性）
+
+    var text = "<a href=\"#\" onclick="alert('hi')">Click me</a>";
+    var sanitized = window.toStaticHTML(text);      //Internet Explorer 8 only
+    alert(sanitized);       //"<a href=\"#\">Click me</a>"
+
+虽然只有IE8支持这个方法，但还是建议在通过innerHTML插入代码之前，尽可能手工检查一下期中的文本内容。
+
+outerHTML属性：
+
+在读模式下，outerHTML返回调用它的元素及所有子节点的HTML标签。在写模式下，会根据指定的HTML字符串创建新的DOM子树，然后用这个DOM子树完全替换调用元素
+
+    <div id="content">
+        <p>This is a <strong>paragraph</strong> with a list following it.</p>
+            <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        
+    </div>
+
+
+insertAdjacentHTML()：两个参数：插入位置和要插入的HTML文本。第一个参数必须是：
+* "beforebegin" 在当前元素之前插入一个紧邻的同辈元素；
+* "afterbegin" 在当前元素之下插入一个系的子元素或者在第一个子元素之间在插入新的子元素；
+* "beforeend" 在当前元素之下插入一个新的子元素或者在最后一个子元素之后再插入新的子元素；
+* "afterend" 在当前元素之后插入一个金陵的同辈元素；
+
+第二个参数是一个字符串，如果浏览器无法解析，就会抛出错误。
+
+    //作为前一个同辈元素插入
+    element.insertAdjacentHTML("beforebegin", )
