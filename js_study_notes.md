@@ -5487,4 +5487,173 @@ insertAdjacentHTML()：两个参数：插入位置和要插入的HTML文本。�
 第二个参数是一个字符串，如果浏览器无法解析，就会抛出错误。
 
     //作为前一个同辈元素插入
-    element.insertAdjacentHTML("beforebegin", )
+    element.insertAdjacentHTML("beforebegin", "<p>Hello world</p>");
+    //作为第一个子元素插入
+    element.insertAdjacentHTML("afterbegin", "<p>Hello world</p>");
+    //作为最后一个子元素插入
+    element.insertAdjacentHTML("beforeend",  "<p>Hello world</p>");
+    //作为后一个同辈元素插入
+    element.insertAdjacentHTML("afterend", "<p>Hello world</p>");
+
+内存与性能问题
+
+在删除带有时间处理程序或引用了其他JavaScript对象子树时,可能导致内存占用问题.在使用innerHTML/outerHTML属性和insertAdjacentHTML()方法时,最好先手工删除要被替换的元素的所有事件处理程序和js对象属性.
+不过,在插入大量HTML标记时,使用innerHTML属性与通过多次DOM操作先创建节点再制定它们之间的关系相比,效率要高很多.因为在设置innerHTML或者outerHTML时,会常见一个HTML解析器,这个解析器是在浏览器级别的代码上运行的.因此比执行js快的多.同样创建和销毁HTML歇息器也会带来性能损失,所以最好能够将设置innerHTML或者outerHTML的次数控制在合理的范围
+
+    for(var i=0, len=values.length; i < len; i++) {
+        ul.innerHTML += "<li>" + values[i] + "</li>";      //要避免这样重复操作
+    }
+
+这种每次循环都设置一次innerHTML的做法效率很低.而且每次循环还要从innerHTML中读取一次信息,就意味着每次循环要访问两次innerHTML.最好的做法是单独构建字符串,然后在一次性将结果字符串赋值给innerHTML
+
+    var itemsHtml = "";
+    for (var i=0, len=values.length; i < len; i++) {
+        itemsHtml += "<li>" + values[i] + "</li>";
+    }
+    ul.innerHTML = itemsHtml;
+
+
+scrollIntoView()方法:
+
+可以在所有HTML元素上调用,通过滚动浏览器窗口或某个容器元素,调用元素就可以出现在视口中.如果给这个方法传入true作为参数,或者不穿襦任何参数,那么窗口滚动之后会让调用元素的顶部与手顶部尽可能平齐.如果传入false作为参数,调用元素会竟可能全部穿现在视口,(可能的话,调用元素的地步会与视口底部平齐)不过顶部不一定.
+
+    //让元素可见
+    document.forms[0].scrollIntoView();
+
+当页面发生变化时,一边使用这个方法吸引用户注意力.实际上,为某个元素设置焦点也会掉至浏览器滚动并显示出获得焦点的元素.
+
+#### 专有扩展
+
+文档模式
+
+页面的文档模式决定了可以使用什么功能.可以使用哪个级别的css,可以再js中使用那些api,以及如何对待文档类型(doctype).
+
+要强制浏览器以某种模式宣言页面,可以使用HTTP头部信息X-UA-Compatible,或者通过等价的<mata>标签来设置
+
+    <mata http-equiv="X-UA-Compatible" content="IE=IEVersion">
+
+    <mata http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+
+如果不打算考虑文档类型声明,而直接使用IE7标准模式,可以使用:
+
+    <mata http-equiv="X-UA-Compatible" content="IE-7">
+
+没有规定必须在页面中设置X-UA-Compatible.默认情况下,浏览器会通过文档类型声明确定是使用最佳的可以用文档模式,还是使用混杂模式
+
+
+children属性
+
+由于IE9之前的版本与其他浏览器在处理文本节点中的空白符时有差异,因此出现children属性.是HTMLCollection的实例,只包含元素中同样还是元素的子节点.除此之外,children属性与childNOdes没有区别.即在元素之包含元素子节点时,两个属性的值相同.
+
+    var childCount = element.children.length;
+    var firstChild = element.children[0];
+
+
+contains()方法
+
+经常需要知道某个节点是不是另一个节点的后代.调用contains()方法的应该是祖先的节点,也就是搜索开始的节点,接收一个参数,要检测的后代节点.如果被检测的节点时候带节点,返回true.否则false
+
+    alert(doucment.documentelement.contains(document.body));        //body
+
+使用DOM Level3 的 compareDocumentPosition()方法也能确定节点间的关系.掩码值:
+
+* 1 : 无关(给定的节点不在当前文档中)
+* 2 : 居前(给定的节点再DOM树总位于参考节点之前)
+* 4 : 居后(给定的节点再DOM树中位于参考节点之后)
+* 8 : 包含(给定的节点是参考节点的祖先)
+* 16 : 倍包含(给定的节点是参考节点的后代)
+
+为模仿contains()方法,应该关注16.可以对compareDocumentPosition()的结果执行按位与.以确定参考节点是否包含给定的节点
+
+    var result = document.documentElement.compareDocumentPosition(document.body);
+    alert(!!(result & 16));
+
+执行后返回20(表示"居后"的4机上表示"被包含"的16).对掩码16执行按位操作会返回非零数值,二两个逻辑非操作符会将该数值转换成布尔值
+
+    function contains(refNOde, otherNode) {
+        if (typeof refNode.contains == "function" && 
+              (!client.engine.webkit || client.engine.webkit >= 522)){
+            return refNOde.contains(otherNode);
+        }else if (typeof refNode.compareDocumentPosition == "function"){
+            return !!(refNOde.compareDocumentPosition(otherNode) & 16);
+        }else {
+            var node = otherNode.parentNode;
+            do {
+                if (node === refNode){
+                    return ture;
+                } else {
+                    node = node.parentNode;
+                }
+            } whild( node !== null);
+            return false;
+        }
+    }
+
+ 
+插入文本
+
+innerText属性:
+
+通过innerText属性可以操作元素中包含的所有文本内容,包括子文档树中的文本.在通过innerText读取值时,会按照由浅入深的顺序,将子文档树中的所有文本凭借起来.在通过innerText写入值时,结果会删除元素的所有子节点,插入包含相应文本值的文本节点
+
+    <div id="content">
+        <p>This is a <strong>paragraph</strong>with a list following it.</p>
+        <ul>
+            <li>Item 1</li>
+            <li>Item 2</li>
+            <li>Item 3</li>
+        </ul>
+    </div>
+
+对于这个div元素而言,innerText返回:
+
+    This is a paragraph with a list following it
+    Item 1
+    Item 2
+    Item 3
+
+由于不同浏览器处理空白符的方式不同,因此输出的文本可能会不会包含原始的HTML代码中的缩进.
+使用innerText属性设置内容:
+
+    div.innerText = "Hello world";
+
+    <div id="content">Hello world</div>
+
+设置innerText属性溢出了先前纯在的所有子节点,完全改变了DOM子树.此外设置innerText属性的同时,也对文本中存在HTML语法字符进行编码
+
+    div.innerText = "Hello & welcome, <b>\"reader\"!</b>";
+
+    <div id="content">Hello &amp; welcome, &lt;b&gt;&quot;reader&quot;!&lt;/b&gt;</div>
+
+可以通过innerText属性过滤掉HTML标签.将innerText设置为等于innerText,这样就可以去掉所有HTML标签.
+
+    div.innerText = div.innerText;
+
+执行后就用原来的文本内容替换了容器元素中的所有内容(包括子节点,因而也就去掉了HTML标签)
+
+outerText属性
+
+在读取文本值时,outerText与innerText的结果完全一样.但在写模式下,outerText完全不同.不只是替换调用它的元素的子节点,而是会替换整个元素(包括子节点)
+
+    div.outerText = "hello world!";
+    //等同于:
+    var text = document.createTextNode("hello world!");
+    div.parentNode.replaceChild(text, div);
+
+本质上新的文本节点会完全取代调用outerText的元素,低吼该元素就从元素文档中被删除.无法访问.
+
+
+滚动
+
+* scrollIntoViewIfNeeded(alignCenter): 只在当前元素在视口中不可见的情况下,才滚动浏览器窗口或容器元素,最终让它可见.如果当前元素在是口中可见,这个方法什么都不做.如果将参数设置为true,则表示尽量将元素显示在视口中部(垂直方向)
+* scorllByLines(pageCount): 将元素的内容滚动制定的行高,lineCont可以是正值,也可以负
+* scrollByPages(pageCount): 将严肃的内容滚动指点的页面高度,具体高度由元素的高度界定
+
+scrollIntoView()和scrollIntoViewIfNeeded()的作用对象是元素的容器,而scrollByLines()和scrllByPages()影响的则是元素自身.
+
+    //将页面主体滚动5行
+    document.body.scrollByLines(5);
+    //在当前元素不可见的时候,让它进入浏览器的视口
+    document.images[0].scrllIntoCiewIfNeeded();
+    //将页面主体往回滚动1页
+    document.body.scrollByPages(-1);
