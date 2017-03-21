@@ -4506,7 +4506,7 @@ getElementById()：一个参数，要取得的元素的ID。这里的ID必须与
 
 页面中多个元素的ID值相同，getElementById()值返回文档中第一次出现的元素。
 
-getElementsBuTagName()：接收一个参数：要取得严肃的标签名，返回的额是包含零或多个元素的NodeList。在HTML文档中，这个方法返回一个HTMLCollection对象，作为一个“动态”集合，该对象与NodeList类似。
+getElementsBuTagName()：接收一个参数：要取得元素的标签名，返回的额是包含零或多个元素的NodeList。在HTML文档中，这个方法返回一个HTMLCollection对象，作为一个“动态”集合，该对象与NodeList类似。
 
     var images = document.getElementsByTagName("img");
 
@@ -5657,3 +5657,49 @@ scrollIntoView()和scrollIntoViewIfNeeded()的作用对象是元素的容器,而
     document.images[0].scrllIntoCiewIfNeeded();
     //将页面主体往回滚动1页
     document.body.scrollByPages(-1);
+
+
+---
+
+### 第12章 DOM2和DOM3
+
+#### DOM变化
+
+针对XML命名空间的变化  P306
+其他方面的变化:
+DocumentType: 
+Document: inportNode():从一个文档中取得一个节点, 然偶将其导入到另一个文档,第七成为这个文档结构的一部分. 类似Element的CloneNOde()
+
+    var newNode = document.importNode(oldNode, true);   //导入节点及其所有子节点
+    document.body.appendChild(newNode);
+
+DOM2还未document.implementation 兑现规定了两个心房发: createDocumentType()和createDocument(). 前者用于城建一个新的DocumentType节点, 接收三个参数: 文档类型名称/publicID/ systemId
+第二个, 方法常见一个新文档, 接受三个参数: 针对文档中元素的namespaceURI/ 文档元素的标签名/ 新文档的文档类型
+
+为document.implementation添加一个新方法: createTHMLDocument(), 创建一个完整的HTML文档, 包括<html></html> / <head></head> / <title></title>/ <body></body> 只接受一个参数, 即新创建文档的标题, 返回新的HTML文档. 
+
+Node类型的变化:
+添加了isSupported(): 用于确定当前节点具有什么能力. 两个参数: 特姓名和特性版本号. 如果浏览器实现了相应特性, 热切能够基于给定节点执行该特性, 就返回true
+
+    if(document.body.isSupported("HTML", "2.0")){
+        //执行只有"DOM2"级"HTML"才支持的操作
+    }
+
+DOM3引入了两个辅助比较节点的方法: isSameNOde()和idEqualNOde(). 都接受一个节点参数, 并在出入节点与引用的节点相同或者相等时返回true. 所谓相同 指的是两个节点引用的同一个对象. 所谓相等, 指的是两个节点是相同的类型, 具有相等歌德属性(nodeValue, nodeName等) , 而且他的attributes 和 childNOdes属性也相等.
+
+    var div1 = document.createElement("div");
+    div1.setAttribute("class", "box");
+    
+    var div2 = document.createElement("div");
+    div2.setAttribute("class", "box");
+    
+    alert(div1.isSameNOde(div1));   //true
+    alert(div1.isEqualNode(div2));      //true
+    alert(div1.isSameNode(div2));       //false
+
+针对未DOM节点添加额外数据引入了新方法: setUserData()方法会将数据指定给节点, 接收三个参数: 要设置的键/ 世界的数据(可以是任何数据类型)和处理函数
+
+    document.body.setUserData("name", "hothunter", function(){});
+    //使用getUserData()并出入相同的键, 就可以取得该数据:
+    var value = document.body.getUserData("name");
+#### 
