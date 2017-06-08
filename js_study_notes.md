@@ -247,7 +247,7 @@ Object类型是所有它的实例的基础，Object所具有的任何属性和�
 ##### 操作符
 
 ++/-- ：
-    
+
     var age = 29;
     ++age;      //age = age + 1;
 
@@ -259,7 +259,7 @@ Object类型是所有它的实例的基础，Object所具有的任何属性和�
     alert(anotherAge);  //30
 
 由于前置递增和递减操作与执行语句的优先级相等，因此整个语句会从左至右被求值。
-    
+
     var num1 = 2;
     var num2 = 20;
     var num3 = --num1 + num2;       //21
@@ -3928,20 +3928,22 @@ javascript是单线程语言，但允许通过设置超时值和间歇时间值�
 setTimeout()调用后会返回一表示超时调用的数值ID，是计划执行的唯一标识符
 clearTimeout()取消尚未执行的调用计划。
 
+
     //设置超时时间
     var timeoutId = setTimeout(funtion(){
         alert("hello world");
         }, 1000);
-    
+
     //把它取消：
     clearTimeout(timeoutId);
+
 
 间歇调用：按照指定的时间间隔重复执行代码，直至间歇调用被取消挥着页面被卸载。
 setInterval()，接受的参数与setTimeout()相同。
 
     //不建议传递字符串！
     setInterval("alert("hello world")" , 10000);
-    
+
     //推荐的调用方式
     setInterval(function(){
         alert("hello world");
@@ -4048,9 +4050,9 @@ location.search返回从问号到URL末尾的所有内容，但却没有办法�
     }
 
     //假设查询字符串是?q=javascript&num=10
-    
+
     var args = getQueryStringArgs();
-    
+
     alert(args["q"]);           //"javascript"
     alert(args["num"]);         //"10"
 
@@ -4069,7 +4071,7 @@ location.search返回从问号到URL末尾的所有内容，但却没有办法�
 另外修改location对象的其他属性也可以改变当前加载的页面：
 
     //假设初始的URL为 http://www.hothunter.cc/index
-    
+
     //将URL修改为 "http://www.hothunter.cc/index/#section1"
     location.hash = "#section1";
     
@@ -4557,11 +4559,12 @@ getElementsByName()：返回带有给定name特性的所有元素。最常用的
 
 除了属性和方法，document对象还有一些特殊结合，都是HTMLCollection对象：
 
-* document.anchors:包含文档中所有带name特性的 <a>元素；
+* document.anchors:包含文档中所有带name特性的 <a></a>元素；
 * document.applets：包含文档中所有<applet>元素，因为不再推荐使用该元素，因此这个集合已经不被建议使用。
 * document.forms：包含文档中所有<form>元素，与document.getElementsByTagNmae("form")得到的结果相同。
 * document.images：包含文档中所有<img>元素，与document.getElementsByTagName("img")得到的结果相同
-* document.links：包含文档中所有带href特性的<a>元素。
+* document.links：包含文档中所有带href特性的<a></a>元素。
+
 
 
 DOM一致性检测：
