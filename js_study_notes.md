@@ -5705,4 +5705,6 @@ DOM3引入了两个辅助比较节点的方法: isSameNOde()和idEqualNOde(). �
     document.body.setUserData("name", "hothunter", function(){});
     //使用getUserData()并出入相同的键, 就可以取得该数据:
     var value = document.body.getUserData("name");
-#### 
+
+#### 第几章来着?
+
