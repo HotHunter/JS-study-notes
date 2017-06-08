@@ -5901,3 +5901,13 @@ CSSStyleSheet继承自StyleSheet, 后者可以作为一个基础接口来定义�
 * scrollWidth: 在没有滚动条的情况下, 元素内容的总宽度.
 * scrollLeft: 被隐藏的内容区域左侧的像素数. 通过设置这个属性可以改变元素的滚动位置.
 * scrollTop: 被隐藏在内容区域上方的像素数, 通过这只这个属性可以改变元素的滚动位置.
+
+scrollHeight和scrollWidth主要用于确定元素内容的实际大小.通常认为<html></html>实在Web浏览器的饰扣中滚动的元素. 因此带有垂直滚动条的页面总高度就是document.documentElement.scrollHeight;
+需要注意对于不包含滚动条的页面, scrollHeight和scrollWidth 与 cilentHeight和cilentWidth之间的关系并不十分清晰.基于document.documentElement 查看的属性会在不同浏览器出现不一致问题.
+
+在确定文档的总高度时(包括基于视口的最小高度时), 必须取得scrollWidth/cilentWidth和scrollHeight/clientHeight中的最大值, 才能保证在跨浏览器的环境小得到精准的结果.
+
+    var docHeight = Math.max(document.documentElement.scrollHeight || document.documentElement.cilentHeight);
+    var docWidth = Math.max(document.documentElement.scrollWidth || document.documentElement.cilentWidth);
+
+通过scrollLeft和scrollTop 属性既可以确定元素当前滚动的状态, 也可以设置元素的滚动位置.
