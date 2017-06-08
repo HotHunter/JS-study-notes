@@ -1,3 +1,11 @@
+<!--/*
+ * @Author: HotHunter 
+ * @Date: 2016-11-17 15:18:13 
+ * @Last Modified by:   HotHunter 
+ * @Last Modified time: 2017-06-08 15:18:13 
+ */-->
+
+
 #JS高程学习笔记
 
 ---
@@ -5,7 +13,7 @@
 ###第一章 javascript简介     P1
 一个完整的javascript实现由三部分组成：
 * 核心（ECMAscript）
-* 文档对象模型（DOM）		
+* 文档对象模型（DOM）
 * 浏览器对象模型（BOM）
 
 #### ECMAscript
@@ -4077,13 +4085,13 @@ location.search返回从问号到URL末尾的所有内容，但却没有办法�
     
     //将URL修改为"http://www.hothunter.cc/index/?q=javascript"
     location.search = "?q=javascript";
-    
+
     //将URL修改为"http://www.google.com/index"
     location.hostname = "www.google.com";
-    
+
     //将URL修改为"http://www.google.com/hothunter"
     location.pathname = "hothunter";
-    
+
     //将URL修改为"http://www.google.com:8080/index"
     location.port = 8080;
 
@@ -4140,10 +4148,10 @@ name属性会包含检测插件必须的所有信息，但有时候也不完全�
         }
         return false;
     }
-    
+
     //检测Flash
     alert(hasPlugin("Flash"));
-    
+
     //检测QuickTime
     alert(hasPlugin("QuickTime"));
 
@@ -4158,10 +4166,10 @@ name属性会包含检测插件必须的所有信息，但有时候也不完全�
             return false;
         }
     }
-    
+
     //检测Flash
     alert(hasIEPlugin("ShockwaveFlash.ShockwaveFlash"));
-    
+
     //检测QuickTime
     alert(hasIEPlugin("QuickTime.QuickTime"));
 
@@ -4175,7 +4183,7 @@ name属性会包含检测插件必须的所有信息，但有时候也不完全�
         }
         return result;
     }
-    
+
     //检测所有浏览器中的QuickTime
     function hasQuickTime(){
         var result = hasPlugin("QuickTime");
@@ -4184,10 +4192,10 @@ name属性会包含检测插件必须的所有信息，但有时候也不完全�
         }
         return result;
     }
-    
+
     //检测Flash
     alert(hasFlash());
-    
+
     //检测QuickTime
     alert(hasQuickTime());
 
@@ -4220,10 +4228,10 @@ history对象个保存着用户上网的历史记录，从窗口被打开的那�
 
     //后退一页
     history.go(-1);
-    
+
     //前进一页
     history.go(1);
-    
+
     //前进两页
     history.go(2);
 
@@ -4236,7 +4244,7 @@ history对象个保存着用户上网的历史记录，从窗口被打开的那�
 
     //后退一页
     history.back();
-    
+
     //前进一页
     history.forward();
 
@@ -4292,7 +4300,7 @@ Node类型：
 
     if (someNode.nodeType == Node.ELEMENT_NODE){
         alert("Node is an element");
-    }    
+    }
 
 对于任意浏览器：
 
@@ -4322,7 +4330,7 @@ nodeName和nodeVlaue:
     var arrayOfNodes = Array.prototype.slice.call(someNode.childNodes,0);
 
 对于IE：
-    
+
     function converToArray(nodes){
         var array = null;
         try{
@@ -4370,22 +4378,22 @@ insertBefore()：吧节点放在childNodes列表中某个特定位置。两个�
     //插入后成为最后一个子节点
     returnedNode = someNode.insertBefore(newNode, null);
     alert(newNode == someNode.lastChild);   //ture
-    
+
     //插入后成为第一个子节点
     var returnedNode = someNode.insertBefor(newNode, someNode.firstChild);
     alert(returnedNOde == newNode);     //true
     alert(newNode == someNOde.firstChild);      //ture
-    
+
     //插入到最后一个子节点前面
     returnedNOde = someNode.insertBefore(newNode, someNOde.lastChild);
-    alert(newNode==someNode.childNodes[someNode.childNodes.length-2]);//true   
+    alert(newNode==someNode.childNodes[someNode.childNodes.length-2]);//true
 
 replaceChild()：替换节点，两个参数：要插入的节点和要替换的节点。要替换的节点将由这个方法韩慧并从文档树中北一处，同时由要插入的节点占据其位置。
 在使用replaceChild()插入一个节点时，该节点的所有关系指针都会从被它替换的节点赋值过来。从技术讲，被替换的节点仍然还在文档中，但它在文档中已经没有了自己的位置。
 
     //替换第一个子节点
     var returnedNode = someNode.replaceChild(newNode,someNode.firstChild);
-    
+
     //替换最后一个子节点
     returnedNode = someNode.replaceChild(newNode, someNOde.lastChild);
 
@@ -4393,7 +4401,7 @@ removeChild()：移除节点，一个参数：要被移除的节点。被移除�
 
     //移除第一个子节点
     var formerFirstChild = someNode.removeCHild(someNOde.firstChild);
-    
+
     //移除最后一个子节点
     var formerLastChild = someNode.removeChild(someNode.lastChild);
 
@@ -4410,7 +4418,7 @@ cloneNode()：用于创建调用这个方法的节点的一个完全相同的副
 
     var deepList = myList.cloneNode(ture);
     alert(deepList.childNodes.length);          //3(IE<9)或7（其他浏览器）
-    
+
     var shallowList = myList.cloneNode(false);
     alert(shallowList.chidNodes.length);        //0
 
@@ -4437,7 +4445,7 @@ childNodes：使用该列表访问文档元素
 
     <html>
         <body>
-            
+
         </body>
     </html>
 
@@ -4463,7 +4471,7 @@ document.title：
 
     //取得文档标题
     var originalTitle = document.title;
-    
+
     //修改文档标题
     document.title = "welcome to HotHunter.cc";
 
@@ -4474,34 +4482,34 @@ referrer属性中保存着链接到当前页面的那个页面的URL。在没有
 
     //取得完整的URL
     var url = document.URL;
-    
+
     //取得域名
     var domain = document.domain;
-    
+
     //取得链接来的URL
     var referrer = document.referrer;
 
 domain可以被修改，但是有限制：
 
     //假设页面来自p2p.hothunter.cc域
-    
+
     document.domain = "hothunter.cc";       //成功
-    
+
     document.domain = "baidu.com";          //失败
 
 另一个domain的限制：
 
     //假设页面来自p2p.hothunter.cc域
-    
+
     document.domain = "hothunter.cc";       //松散的-成功
-    
+
     document.domain = "resume.hothunter.cc";        //紧绷的-失败
 
 
 查找元素：
 
 getElementById()：一个参数，要取得的元素的ID。这里的ID必须与页面中元素id特性（attribute）严格匹配，包括大小写
-    
+
     <div id="myDiv">Some text</div>
 
     var div = document.getElementById("myDiv");
@@ -4571,7 +4579,7 @@ DOM一致性检测：
 
 document.implementation：检测浏览器实现了DOM的哪些部分。
 DOM1只提供一个方法：hasFeature()，接收连个参数：要检测的DOM功能歌德名称以及版本号。
-    
+
     var hasXmlDom = document.implementation.hasFeature("XML", "1.0");
 
 P259。可以检测的不同的值的列表
@@ -4640,7 +4648,7 @@ HTML元素：
     alret(div.dir);         //"ltr"
 
     div.id = "someOtherId";
-    
+
     div.className = "fuckme";
     div.title = "haokunxiang huijia shujiaole ";
     div.lang = "zh";
@@ -4806,10 +4814,10 @@ Text 类型
 
     <!没有内容，也就没有文本节点-->
     <div></div>
-    
+
     <!-->有空格，因而有一个文本节点</!-->
     <div> </div>
-    
+
     <!-->有内容，有一个文本节点</!-->
     <div>Hello World</div>
 
@@ -4830,30 +4838,30 @@ Text 类型
 创建文本节点：
 
 document.createTextNode()：接收一个参数：要插入节点中的文本
-    
+
     var textNode = document.createTextNode("<strong>Hello</strong> world!");
 
 创建一个div并向其添加一条信息：
 
     var element = document.creatElement("div");
     element.className = "massage";
-    
+
     var textNode = document.createTextNode("Hello world");
     element.appendCHild(textNode);
-    
+
     document.body.appendChild(element);
 
 某些情况下一个元素肯恩更包含多个文本子节点
 
     var element = document.createElement("div");
     element.className = "message";
-    
+
     var textNode = document.createTextNode("Hello");
     element.appendChild(textNode);
-    
+
     var anotherTextNode = document.createTextNode("world");
     element.appendCHild(anotherTextNode);
-    
+
     document.body.appendChild(element);
 
 
@@ -4863,17 +4871,17 @@ normalize()：如果在一个包含两个或多个文本节点的父元素上调
 
     var element = document.createElement("div");
     element.className = "message";
-    
+
     var textNode = document.creteTextNode("Hello world");
     element.appendChild(textNode);
-    
+
     var anothertextNode = document.createTextNode("Yippee!");
     element.appendChild(anothertextNode);
-    
+
     document.body.appendChild(element);
-    
+
     alert(element.childNodes.length);       //2
-    
+
     element.normailze();
     alert(element.childNodes.length);       //1
     alert(element.firstChid.nodeValue);     //"Hello world!Yippee!"
@@ -4885,12 +4893,12 @@ splitText()：与normailze()相反。将一个文本节点分成两个文本节�
 
     var element = document.createElement("div");
     element.className = "message";
-    
+
     var textNode = document.createTextNode("Hello world");
     element.appendChild(textNode);
-    
+
     document.body.appendChild(element);
-    
+
     var newNode = element.firstChild.splitText(5);
     alert(element.firstChild.nodeValue);            //"Hello"
     alert(newNode.nodeValue);                       //"world"
@@ -4953,13 +4961,13 @@ DocumentFragment 类型
     var fragment = document.createDocumentFragment();
     var ul = document.getElementById("myList");
     var li = null;
-    
+
     for(var i=0; i<3; i++){
         li = document.createElement("li");
         li.appendCHild(document.createTextNode("Item" + (i + 1)));
         fragment.appendChild(li);
     }
-    
+
     ul.appendChild(fragment);
 
 
@@ -5013,7 +5021,7 @@ Attr 三个属性：name：特性名称（与nodeName的值相同）/ value：�
         script.src = url;
         document.body.appendChild(script);
     }
-    
+
     loadScript("client.js");
 
 另外一种方式：
@@ -5043,7 +5051,7 @@ IE将<script>视为一个特殊的元素，不允许DOM访问其子节点。不�
         }
         document.body.appendChild(script);
     }
-    
+
     loacScritpString("function sayHi(){alert("Hi")}");
 
 
@@ -5070,7 +5078,7 @@ IE将<script>视为一个特殊的元素，不允许DOM访问其子节点。不�
         var head = document.getElementsByTagName("head")[0];
         head.appendChild(link);
     }
-    
+
     loadStyles("styles.css");
 
 使用style标签：
@@ -5094,7 +5102,7 @@ IE将<script>视为一个特殊的元素，不允许DOM访问其子节点。不�
         var head = document.getElementsByTagName("head")[0];
         head.appendChild(style);
     }
-    
+
     loadStrleString("body{background-color:red;}");
 
 
@@ -5125,25 +5133,25 @@ IE将<script>视为一个特殊的元素，不允许DOM访问其子节点。不�
     var table = document.createElement("tabel");
     table.border = 1;
     table.width = 100%;
-    
+
     //创建tbody
     var tbody = document.createElement("tbody");
     table.appendChild(tbody);
-    
+
     //创建第一行
     tbody.insertRow(0);
     tbody.rows[0].insertCell(0);
     tbody.rows[0].cells[0].appendChild(document.createTextNode("cell 1, 1"));
     tbody.rows[0].insertCell(1);
     tbody.rows[0].cells[1].appendChild(document.createTextNode("cell 2, 1"));
-    
+
     //创建第二行
     tbody.insertRow(1);
     tbody.rews[1].insertCell(0);
     tbody.rews[1].cells[0].appendChild(document.createTextNode("cell 1, 2"));
     tbody.rews[1].insertCell(1);
     tbody.rews[1].cells[1].appendChild(document.createTextNode("cell 2, 2"));
-    
+
     //将表格添加到文档主体中
     document.body.appendChild(table);
 
@@ -5157,7 +5165,7 @@ NodeList/NamedNodeMap/HTMLCollection
     var divs = document.getElementsByTagName("div"),
         i,
         div;
-    
+
     for(i=0; i < divs.length; i++){
         div = document.createElement("div");
         document.body.appendChild(div);
@@ -5169,7 +5177,7 @@ NodeList/NamedNodeMap/HTMLCollection
         i,
         len,
         div;
-    
+
     for (i=0, len=divs.length; i<len ;i++) {
         div = document.createElement("div");
         document.body.appendChild(div);
@@ -5191,13 +5199,13 @@ querySelector()：接收一个css选择符，返回与该模式匹配的第一�
 
     //取得body元素
     var body = document.querySelector("body");
-    
+
     //取得ID为'myDiv'的元素
     var myDiv = document.querySelector("#myDiv");
-    
+
     //取得类为"selected"的第一个元素
     var selected = document.quertSelector(".selected");
-    
+
     //取得类为"button"的第一个图像元素
     var img = document.body.querySelector("img.button");
 
@@ -5209,10 +5217,10 @@ querySelectorAll()：接收的参数与querySelector()相同，都是css选择�
 
     //取得某<div>中所有<em>元素（类似getElementsByTagName("em")）
     var ems = document.getElementById("myDiv").quertSelectorAll("em");
-    
+
     //取得类为"selectored"的所有元素
     var selectoreds = document.quertSelectorAll(".selectored");
-    
+
     //取得所有<p>元素中的所有<strong>元素
     var strongs = document.querySelectorAll("p storng");
 
@@ -5274,7 +5282,7 @@ getElementByClassName(): 接收一个参数，一个包含一或多个类名的�
 
     //取得所有类中包含"username"和"current"的元素，类名的先后顺序无所谓。
     var allCurrentUsernames = document.getElementsByClassName("username current");
-    
+
     //取得ID为“myDiv”的元素中带有类名"selected"的所有元素
     var selected = document.getElementById("myDiv").getElementByClassName("selected");
 
@@ -5285,10 +5293,10 @@ getElementByClassName(): 接收一个参数，一个包含一或多个类名的�
     <div class="bd user disabled">...</div>
 
     //删除"user"
-    
+
     //首先取得类名字符串并拆分成数组
     var classNames = div.className.split(/\s+/);
-    
+
     //找到要删除的类名
     var pos = -1, i, len;
     for (i=0, len=classNames.length; i<len; i++) {
@@ -5297,10 +5305,10 @@ getElementByClassName(): 接收一个参数，一个包含一或多个类名的�
             break
         }
     }
-    
+
     //删除类名
     classNames.splice(i,1);
-    
+
     //把剩下的类名拼成字符串
     div.classNames = classNames.join(" ");
 
@@ -5317,13 +5325,13 @@ HTML5新属性：classList属性。是新集合类型DOMTokenList的实例。包
 
     //删除"disabled"类
     div.classList.remove("disabled");
-    
+
     //添加"current"类
     div.classList.add("current");
-    
+
     //切换"user"类
     div.classList.toggle("user");
-    
+
     //确定子元素中是否包含既定的类名
     if(div.classList.contains("db") && !div.classList.contains("disabled")){
         doSomething(div.classList[i]);
@@ -5393,17 +5401,17 @@ H5可以为元素添加非标准的属性，弹药添加前缀data-。目的是�
 添加自己定义的属性后，可以通过元素dataset属性来访问自定义属性的值。dataset属性的值是DOMStringMap的一个实例，依旧是一个名值对的映射，每个data-name形式的属性都会有一个对饮给定二属性，只不过属性名没有data-前缀。
 
     //下面使用的方法仅用于演示
-    
+
     var div = document.getElementById("myDiv");
-    
+
     //取得自定义属性的值
     var appId = div.dataset.appid;
     var myName = div.dataset.myname;
-    
+
     //设置值
     div.dataset.appid = "98765";
     div.dataset.myname = "nobody";
-    
+
     //查看：
     if (div.dataset.myname){
         alert("Hello, " + div.dataset.myname);
@@ -5438,7 +5446,7 @@ innerHTML: 该属性在读模式下返回与调用元素的所有子节点（包
 
     div.innerHTML = "Hello & welcome, <b>\"reader\"</b>";
 得到：
-        
+
     <div id="content">Hello &amp; welcome, <b>&quot;reader&quot;</b></div>
 
 注意innerHTML插入<script></script>元素可能出现问题。
@@ -5477,7 +5485,7 @@ outerHTML属性：
                 <li>Item 2</li>
                 <li>Item 3</li>
             </ul>
-        
+
     </div>
 
 
@@ -5574,8 +5582,7 @@ contains()方法
 执行后返回20(表示"居后"的4机上表示"被包含"的16).对掩码16执行按位操作会返回非零数值,二两个逻辑非操作符会将该数值转换成布尔值
 
     function contains(refNOde, otherNode) {
-        if (typeof refNode.contains == "function" && 
-              (!client.engine.webkit || client.engine.webkit >= 522)){
+        if (typeof refNode.contains == "function" && (!client.engine.webkit || client.engine.webkit >= 522)){
             return refNOde.contains(otherNode);
         }else if (typeof refNode.compareDocumentPosition == "function"){
             return !!(refNOde.compareDocumentPosition(otherNode) & 16);
@@ -5592,7 +5599,7 @@ contains()方法
         }
     }
 
- 
+
 插入文本
 
 innerText属性:
@@ -5670,7 +5677,7 @@ scrollIntoView()和scrollIntoViewIfNeeded()的作用对象是元素的容器,而
 
 针对XML命名空间的变化  P306
 其他方面的变化:
-DocumentType: 
+DocumentType:
 Document: inportNode():从一个文档中取得一个节点, 然偶将其导入到另一个文档,第七成为这个文档结构的一部分. 类似Element的CloneNOde()
 
     var newNode = document.importNode(oldNode, true);   //导入节点及其所有子节点
@@ -5679,7 +5686,7 @@ Document: inportNode():从一个文档中取得一个节点, 然偶将其导入�
 DOM2还未document.implementation 兑现规定了两个心房发: createDocumentType()和createDocument(). 前者用于城建一个新的DocumentType节点, 接收三个参数: 文档类型名称/publicID/ systemId
 第二个, 方法常见一个新文档, 接受三个参数: 针对文档中元素的namespaceURI/ 文档元素的标签名/ 新文档的文档类型
 
-为document.implementation添加一个新方法: createTHMLDocument(), 创建一个完整的HTML文档, 包括<html></html> / <head></head> / <title></title>/ <body></body> 只接受一个参数, 即新创建文档的标题, 返回新的HTML文档. 
+为document.implementation添加一个新方法: createTHMLDocument(), 创建一个完整的HTML文档, 包括<html></html> / <head></head> / <title></title>/ <body></body> 只接受一个参数, 即新创建文档的标题, 返回新的HTML文档.
 
 Node类型的变化:
 添加了isSupported(): 用于确定当前节点具有什么能力. 两个参数: 特姓名和特性版本号. 如果浏览器实现了相应特性, 热切能够基于给定节点执行该特性, 就返回true
@@ -5688,14 +5695,14 @@ Node类型的变化:
         //执行只有"DOM2"级"HTML"才支持的操作
     }
 
-DOM3引入了两个辅助比较节点的方法: isSameNOde()和idEqualNOde(). 都接受一个节点参数, 并在出入节点与引用的节点相同或者相等时返回true. 所谓相同 指的是两个节点引用的同一个对象. 所谓相等, 指的是两个节点是相同的类型, 具有相等歌德属性(nodeValue, nodeName等) , 而且他的attributes 和 childNOdes属性也相等.
+DOM3引入了两个辅助比较节点的方法: isSameNode()和idEqualNOde(). 都接受一个节点参数, 并在出入节点与引用的节点相同或者相等时返回true. 所谓相同 指的是两个节点引用的同一个对象. 所谓相等, 指的是两个节点是相同的类型, 具有相等歌德属性(nodeValue, nodeName等) , 而且他的attributes 和 childNOdes属性也相等.
 
     var div1 = document.createElement("div");
     div1.setAttribute("class", "box");
-    
+
     var div2 = document.createElement("div");
     div2.setAttribute("class", "box");
-    
+
     alert(div1.isSameNOde(div1));   //true
     alert(div1.isEqualNode(div2));      //true
     alert(div1.isSameNode(div2));       //false
@@ -5706,5 +5713,191 @@ DOM3引入了两个辅助比较节点的方法: isSameNOde()和idEqualNOde(). �
     //使用getUserData()并出入相同的键, 就可以取得该数据:
     var value = document.body.getUserData("name");
 
-#### 第几章来着?
+传入setUserData()中的处理函数会在带有数据的节点被复制, 删除, 重命名, 或引入一个文档时调用, 因而可以实现决定在上述操作发生时如何处理用户数据. 5个参数:操作类型数值:(1.赋值, 2.导入, 3.删除, 4.重命名)/数据键/数据值/源节点和目标节点. 在删除节点是, 源节点是null; 除在复制节点, 目标节点均为null.
 
+    var div = document.createElement("div");
+    div.setUserData("name", "hothunter", function(operation, key, value, src, dest{
+        if(operation == 1){
+            dest.setUserData(key, value, function(){});
+        }
+    }));
+    var newDiv = div.cloneNode(true);
+    alert(newDiv.getUserData("name"));
+框架的变化:
+
+框架和内嵌框架分别用HTMLFrameElement和HTMLIFrameElement表示, 他们在DOM2级中都有一个新属性,contentDocument, 包含一个指针, 指向表示框架内容的文档对象.在此之前, 无法直接通过元素取得这个文档对象(只能使用frames集合). 
+
+    var iframe = document.getElementById("myIframe");
+    var iframeDoc = iframe.contentDocument;     //IE8前无效
+
+#### 样式
+
+在HTML中定义样式方式有3中: 通过<link/>元素包含外部样式表文件/使用<style></style>元素定义嵌入样式/使用style特性定义针对特定元素的样式.
+
+    var supportsDOM2CSS = document.implementation.hasFeature('CSS', "2.0");
+    var supportsDOM2CSS2 = document.implementation.hasFeature('CSS2', "2.0");
+
+##### 访问元素的样式
+
+任何支持style特性的HTML元素在JavaScript中都有一个对应的style属性. 这个style对象是CSSStyleDeclaration的实力, 包含通过HTML的style特性制定的所有样式信息, 但不包含与外部样式表或嵌入样式表经层叠而来的样式. 在style特性中制定的任何css属性豆浆表现为这个style对象的相应属性.对于使用类型background-image这样形式的必须转化成驼峰形式.
+
+    background-image : style.backgroundImage
+    color : style.color
+    display : style.display
+    font-family : style.fontFamily
+    * flout : style.cssFloat/style.styleFloat(IE)
+
+    var myDiv = document.getElementById("myDiv");
+    myDiv.style.backgroundColor = "red";
+    myDiv.style.width = "100px";
+    myDiv.style.height = "200px";
+    myDiv.style.border = "1px solid black";
+
+通过style取得在style特性中制定的样式:
+
+    <div id="myDiv" style="background-color:blue; width:10px; height: 25px;"></div>
+
+    alert(myDiv.style.backgroundColor);     //"blue"
+    alert(myDiv.style.width);       //"10px"
+    alert(myDiv.style.height);      //"25px"
+
+如果没有为元素设置style特性, 那么style对象中可能会包含一些默认的值, 但这些值并不能准确的反应该元素的样式信息.
+
+除此以外DOM2还未style定义了一些属性和方法, 在提供元素的style特性值得同时, 也可以修改样式
+
+
+* cssText: 访问到style特性中的CSS代码
+* length: 应用给严肃的CSS属性的数量.
+* parentRule : 表示CSS信息的CSSRule对象
+* getPropertyCSSValue(propertyName) : 返回包含给定属性值的CSSValue对象.
+* getPropertyPriority(propertyName) : 如果给定的属性使用!important, 返回"important",否则返回空
+* getPropertyValue(propertyName) : 返回给定属性的字符串值
+* item(index) : 返回给定未知的CSS属性的名称.
+* removeProperty(propertyName) : 从样式中删除给定属性
+* setProperty(propertyName, value, priority) : 将给定属性设置为相应的值, 并加上优先权限标志("important"或一个空字符串)
+
+通过cssText设置的值会重写整个style特性的值, 以前通过style特性指定的样式信息都将丢失
+
+    myDiv.style.cssText = "width: 25px; height: 100px; background-color: green";
+    alert(myDiv.style.cssText);
+
+无论是使用方括号语法还是使用item()方法, 都可以取得CSS属性名("background-color", 不是"backgroundColor"),然后就可以在getPropertyValue()中使用取得的属性名进一步取得属性的值.
+
+    var prop, value, i, len;
+    for(i=0, len=myDiv.style.length; i<len; i++){
+        prop = myDiv.style[i];      //或者 myDiv.style.item(i)
+        value = myDiv.style.getPropertyValue(prop);
+        alert(prop + " : " + value);
+    }
+
+getPropertyValue()取得的始终是css属性值得字符串表示. 使用getPropertyCSSValue(), 可以获得更多信息.返回一个包含两个属性CSSValue对象, cssText(值与getPropertyValue()返回的值一样)和cssValueType(0继承的值, 1基本的值, 2值列表, 3自定义的值)
+
+    var prop, value, i, len;
+    for(i=0, len=myDiv.style.length; i<len; i++){
+        prop = myDiv.style[i];      //或者 myDiv.style.item(i)
+        value = myDiv.style.getPropertyCSSValue(prop);
+        alert(prop + ' : ' + value.cssText + " ( " + value.cssValueType + " ) ");
+    }
+
+计算的样式: 虽然style对象能够提供支持style特性的任何元素的样式信息, 但不包含那些从其他样式表层叠而来的并影响到当前元素的样式信息. getComputedStyle()方法两个参数: 要取得计算样式元素和一个伪元素字符串(例如":after"). 如果不需要为元素信息, 第二个参数可以使null.返回一个CSSStyleDeclaration对象(与style属性相同类型).其中包含当前元素所有计算的样式.
+
+操作样式表:
+
+CSSStyleSheet类型表示样式表. 包括通过<link/>包含的样式表和在<style></style>中定义的.
+CSSStyleSheet继承自StyleSheet, 后者可以作为一个基础接口来定义非CSS样式表
+属性包括: (disabled/href/media/ownerNode/parentStyleSheet/title/type/cssRules/ownerRule/deleteRule/insertRule)
+应用于文档的所有样式表示通过document.styleSheet集合来表示. 通过这个集合的length属性可以获得文档中样式表的数量, 而通过方括号语法或item()可以访问每一个样式表
+
+    //以下可以输出文档中使用的每一个样式表的href
+    var sheet = null;
+    for(var i=0, len=document.styleSheets.length; i<len; i++){
+        sheet = document.styleSheets[i];
+        alert(sheet.href);
+    }
+
+    //想要在所有浏览器中都能取得样式表对象:
+    function getStyleSheet(element){
+        return element.sheet || element.styleSheet;
+    }
+    //取得第一个link引入的样式表
+    var link = document.getElementsByTagName("link")[0];
+    var sheet = getStyleSheet(link);
+
+大多数情况使用style就可以满足所有操作样式规则的需求.这个对象每个元素的style属性一样, 可以通过它读取和修改规则中的样式信息.
+
+    div.box {
+        background-color: blue;
+        width: 100px;
+        height: 200px;
+    }
+    var sheet = document.styleSheets[0];
+    var rules = sheet.cssRules || sheet.rules;      //取得规则列表
+    var rule = rules[0];        //取得第一条规则
+    alert(rule.selectorText);           //"div.box"
+    alert(rule.style.cssText);          //完整的css代码
+    alert(rule.style.backgroundColor);  //"blue"
+    alert(rule.style.width);            //"100px"
+    alert(rule.style.height);           //"200px"
+
+    //修改如下:
+    rule.style.backgroundColor = "red";
+
+向现有样式表中添加新规则: insertRule(),两个参数: 规则文本和表示在哪里插入规则的索引.
+    
+    sheet.insertRule("body{background-color:silver}", 0); //DOM方法
+
+从样式表中删除规则的方法是deleteRule(),一个参: 要删除的规则的位置
+
+    sheet.deleteRule(0);        //DOM方法
+    //IE:
+    sheet.removeRule(0);
+
+##### 元素大小
+
+偏移量: 包括元素在屏幕上占用的所有可见的空间. 元素的可见大小由其高度宽度决定.包括所有内边距/滚动条和边框大小(不包括外边距)
+
+* offsetHeight: 元素在垂直方向上占用的空间大小, 以像素计. 包括元素的高度/(可见的)水平滚动条的高度/上边框高度和下边框高度
+* offestWidth: 元素在水平方向上占用的空间大小, 以像素计. 包括元素的宽度/(可见的)竖直滚动条的宽度/左右边框宽度
+* offsetLeft: 元素的左外边框至包含元素的左内边框之间的像素距离
+* offsetTop: 元素的上外边框至包含元素的上内边框之间的像素距离.
+
+想要知道某个元素在页面上的偏移量, 将这个元素的offsetLeft和offsetTop与其offsetParent的相同属性相加, 循环直至根元素, 就可以得到一个基本准确的值. 
+
+    function getElementLeft(el){
+        var actualLeft = el.offsetLeft;
+        var actualTop = el.offsetTop;
+        var current = el.offsetParent;
+        while(current !== null){
+            actualLeft += current.offsetLeft;
+            actralTop += current.offsetTop;
+            current = current.offsetParent;
+        }
+        return [actualLeft, actualTop];
+    }
+    //没什么卵用
+
+客户区大小:
+元素的客户区大小(client dimension), 指的是元素内容及其内边距所占据的空间大小.clientWidth(元素内容区宽度加上左右内边距宽度)和clientHeight(元素内容区高度加上上下内边距高度).
+客户区大小就是元素内部的空间大小, 因此滚动条占用的空间不计算在内.
+
+    function getViewport(){
+        if(document.compatMode == "BackCompat"){ //判断是否为混杂模式
+            return {
+                width: document.body.clientWidth,
+                height: document.body.clientHeight
+            }
+        }else{
+            return {
+                width: document.documentElement.clientWidth,
+                height: document.documentElement.clientHeight
+            }
+        }
+    }
+
+滚动大小:
+包含滚动内容的元素的大小. 有些元素例如html, 即使没有执行任何代码也能自动添加滚动条; 另外一些需要通过css的overflow属性进行设置才能滚动.
+
+* scrolllHeight: 在没有滚动条的情况下, 元素内容的总高度.
+* scrollWidth: 在没有滚动条的情况下, 元素内容的总宽度.
+* scrollLeft: 被隐藏的内容区域左侧的像素数. 通过设置这个属性可以改变元素的滚动位置.
+* scrollTop: 被隐藏在内容区域上方的像素数, 通过这只这个属性可以改变元素的滚动位置.
